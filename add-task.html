@@ -1,0 +1,3668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增调度任务 - DCIM运维系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        /* 顶部导航栏 */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 20px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .navbar .logo {
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: 40px;
+        }
+
+        .navbar .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .navbar .nav-item {
+            margin-right: 30px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .nav-item.active,
+        .navbar .nav-item:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #667eea;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        /* 步骤条 */
+        .steps-container {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+
+        .step:not(.active):not(.completed) .step-number {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            color: #374151;
+        }
+
+        .step.active .step-title {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* 表单内容区域 */
+        .form-container {
+            background: white;
+            border-radius: 8px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .form-label .required {
+            color: #ef4444;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .form-error {
+            font-size: 12px;
+            color: #ef4444;
+            margin-top: 4px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        /* 文件上传 */
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            border-radius: 6px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+
+        .file-upload-text {
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .file-upload-icon {
+            font-size: 24px;
+            color: #9ca3af;
+        }
+
+        .uploaded-file {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        .uploaded-file .remove-file {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* 批次号管理 */
+        .batch-management {
+            margin-top: 24px;
+        }
+
+        .batch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .batch-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .add-batch-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.3s;
+        }
+
+        .add-batch-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .batch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .batch-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 16px;
+            position: relative;
+        }
+
+        .batch-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .batch-number {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 16px;
+        }
+
+        .remove-batch-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .remove-batch-btn:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .batch-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .batch-info-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .batch-info-label {
+            color: #6b7280;
+        }
+
+        .batch-info-value {
+            color: #374151;
+            font-weight: 500;
+        }
+
+        /* 底部操作栏 */
+        .form-actions {
+            background: white;
+            padding: 20px 32px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* 批次模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: end;
+            gap: 12px;
+        }
+
+                 /* 设备调度管理样式 */
+         .operation-blocks-container {
+             margin-top: 20px;
+         }
+
+         .operation-blocks-header {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 20px;
+             padding: 16px;
+             background: #f8fafc;
+             border-radius: 8px;
+             border: 1px solid #e5e7eb;
+         }
+
+         .blocks-info {
+             display: flex;
+             gap: 24px;
+             font-size: 14px;
+             color: #374151;
+         }
+
+         .blocks-info span {
+             font-weight: 500;
+         }
+
+         .operation-block {
+             background: #ffffff;
+             border: 1px solid #e5e7eb;
+             border-radius: 8px;
+             margin-bottom: 20px;
+             overflow: hidden;
+         }
+
+         .operation-block-header {
+             background: #f8fafc;
+             padding: 16px 20px;
+             border-bottom: 1px solid #e5e7eb;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+
+         .block-title {
+             font-size: 16px;
+             font-weight: 600;
+             color: #1f2937;
+         }
+
+         .block-actions {
+             display: flex;
+             gap: 8px;
+         }
+
+         .operation-block-content {
+             padding: 20px;
+         }
+
+         .block-basic-info {
+             display: grid;
+             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+             gap: 16px;
+             margin-bottom: 20px;
+             padding-bottom: 20px;
+             border-bottom: 1px solid #f3f4f6;
+         }
+
+         .device-type-group {
+             display: flex;
+             gap: 12px;
+             flex-wrap: wrap;
+         }
+
+         .checkbox-item {
+             display: flex;
+             align-items: center;
+             gap: 6px;
+             padding: 6px 12px;
+             border: 1px solid #d1d5db;
+             border-radius: 6px;
+             cursor: pointer;
+             transition: all 0.3s;
+         }
+
+         .checkbox-item:hover {
+             border-color: #667eea;
+             background-color: rgba(102, 126, 234, 0.05);
+         }
+
+         .checkbox-item.checked {
+             border-color: #667eea;
+             background-color: rgba(102, 126, 234, 0.1);
+             color: #667eea;
+         }
+
+         .checkbox-item input[type="checkbox"] {
+             margin: 0;
+         }
+
+         .devices-section {
+             margin-top: 20px;
+         }
+
+         .devices-header {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 16px;
+         }
+
+         .devices-count {
+             font-size: 14px;
+             color: #6b7280;
+         }
+
+         .devices-table {
+             border: 1px solid #e5e7eb;
+             border-radius: 8px;
+             overflow: hidden;
+             background: white;
+         }
+
+         .devices-table table {
+             width: 100%;
+             border-collapse: collapse;
+         }
+
+         .devices-table th {
+             background: #f8fafc;
+             padding: 12px 8px;
+             text-align: left;
+             font-weight: 600;
+             color: #374151;
+             font-size: 13px;
+             border-bottom: 1px solid #e5e7eb;
+         }
+
+         .devices-table td {
+             padding: 8px;
+             border-bottom: 1px solid #f3f4f6;
+             vertical-align: middle;
+         }
+
+         .devices-table tbody tr:hover {
+             background-color: #f9fafb;
+         }
+
+         .device-input {
+             width: 100%;
+             padding: 6px 8px;
+             border: 1px solid #d1d5db;
+             border-radius: 4px;
+             font-size: 13px;
+             outline: none;
+         }
+
+         .device-input:focus {
+             border-color: #667eea;
+             box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+         }
+
+         .device-input:read-only {
+             background-color: #f9fafb;
+             color: #6b7280;
+         }
+
+         .device-select {
+             width: 100%;
+             padding: 6px 8px;
+             border: 1px solid #d1d5db;
+             border-radius: 4px;
+             font-size: 13px;
+             background: white;
+             outline: none;
+         }
+
+         .device-select:focus {
+             border-color: #667eea;
+             box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+         }
+
+         .remove-device-btn {
+             background: #ef4444;
+             color: white;
+             border: none;
+             padding: 4px 8px;
+             border-radius: 4px;
+             font-size: 12px;
+             cursor: pointer;
+         }
+
+         .remove-device-btn:hover {
+             background: #dc2626;
+         }
+
+         .add-device-btn {
+             background: #10b981;
+             color: white;
+             border: none;
+             padding: 8px 16px;
+             border-radius: 6px;
+             font-size: 14px;
+             cursor: pointer;
+             display: flex;
+             align-items: center;
+             gap: 6px;
+         }
+
+         .add-device-btn:hover {
+             background: #059669;
+         }
+
+         .add-device-btn:disabled {
+             background: #9ca3af;
+             cursor: not-allowed;
+         }
+
+         .device-limit-warning {
+             background: #fef3c7;
+             color: #92400e;
+             padding: 8px 12px;
+             border-radius: 6px;
+             font-size: 13px;
+             margin-top: 8px;
+         }
+
+         .u-position-group {
+             display: flex;
+             gap: 8px;
+             align-items: center;
+         }
+
+         .u-position-group .device-select {
+             width: auto;
+             min-width: 70px;
+         }
+
+         .auto-filled {
+             background-color: #f0f9ff !important;
+             color: #0369a1 !important;
+         }
+
+         .validation-error {
+             border-color: #ef4444 !important;
+             box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+         }
+
+         .validation-message {
+             font-size: 11px;
+             color: #ef4444;
+             margin-top: 2px;
+         }
+
+         /* 链路拓扑调整样式 */
+         .topology-blocks-container {
+             margin-top: 20px;
+         }
+
+         .topology-blocks-header {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 20px;
+             padding: 16px;
+             background: #f8fafc;
+             border-radius: 8px;
+             border: 1px solid #e5e7eb;
+         }
+
+         .topology-block {
+             background: #ffffff;
+             border: 1px solid #e5e7eb;
+             border-radius: 8px;
+             margin-bottom: 20px;
+             overflow: hidden;
+         }
+
+         .topology-block-header {
+             background: #f8fafc;
+             padding: 16px 20px;
+             border-bottom: 1px solid #e5e7eb;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+
+         .links-section {
+             margin-top: 20px;
+         }
+
+         .links-header {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 16px;
+         }
+
+         .links-count {
+             font-size: 14px;
+             color: #6b7280;
+         }
+
+         .links-actions {
+             display: flex;
+             gap: 12px;
+             align-items: center;
+         }
+
+         .validate-links-btn {
+             background: #3b82f6;
+             color: white;
+             border: none;
+             padding: 8px 16px;
+             border-radius: 6px;
+             font-size: 14px;
+             cursor: pointer;
+             display: flex;
+             align-items: center;
+             gap: 6px;
+             transition: all 0.2s ease;
+         }
+
+         .validate-links-btn:hover {
+             background: #2563eb;
+         }
+
+         .validate-links-btn:disabled {
+             background: #9ca3af;
+             cursor: not-allowed;
+         }
+
+         .add-link-btn {
+             background: #10b981;
+             color: white;
+             border: none;
+             padding: 8px 16px;
+             border-radius: 6px;
+             font-size: 14px;
+             cursor: pointer;
+             display: flex;
+             align-items: center;
+             gap: 6px;
+         }
+
+         .add-link-btn:hover {
+             background: #059669;
+         }
+
+         .add-link-btn:disabled {
+             background: #9ca3af;
+             cursor: not-allowed;
+         }
+
+         .link-limit-warning {
+             background: #fef3c7;
+             color: #92400e;
+             padding: 8px 12px;
+             border-radius: 6px;
+             font-size: 13px;
+             margin-top: 8px;
+         }
+
+         .links-container {
+             display: flex;
+             flex-direction: column;
+             gap: 16px;
+         }
+
+         .link-card {
+             border: 1px solid #e5e7eb;
+             border-radius: 8px;
+             background: white;
+             overflow: hidden;
+         }
+
+         .link-card-header {
+             background: #f8fafc;
+             padding: 12px 16px;
+             border-bottom: 1px solid #e5e7eb;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+
+         .link-card-title {
+             font-weight: 600;
+             color: #374151;
+             font-size: 14px;
+         }
+
+         .link-card-actions {
+             display: flex;
+             gap: 8px;
+         }
+
+         .link-card-body {
+             padding: 20px;
+             display: grid;
+             grid-template-columns: 1fr 1fr 1fr;
+             gap: 20px;
+         }
+
+         @media (max-width: 1200px) {
+             .link-card-body {
+                 grid-template-columns: 1fr;
+                 gap: 16px;
+             }
+             
+             .link-card-header {
+                 flex-direction: column;
+                 align-items: flex-start;
+                 gap: 10px;
+             }
+             
+             .link-card-actions {
+                 width: 100%;
+                 justify-content: flex-end;
+             }
+         }
+
+         .link-info-section {
+             border: 1px solid #e5e7eb;
+             border-radius: 6px;
+             overflow: hidden;
+         }
+
+         .link-info-header {
+             background: #f8fafc;
+             padding: 12px 16px;
+             border-bottom: 1px solid #e5e7eb;
+             font-weight: 600;
+             color: #374151;
+             font-size: 13px;
+         }
+
+         .link-info-content {
+             padding: 16px;
+             display: flex;
+             flex-direction: column;
+             gap: 12px;
+         }
+
+         .link-field {
+             display: flex;
+             flex-direction: column;
+             gap: 4px;
+         }
+
+         .link-field-label {
+             font-size: 12px;
+             color: #6b7280;
+             font-weight: 500;
+         }
+
+         .link-field-label .required {
+             color: #ef4444;
+         }
+
+         .validation-result {
+             padding: 8px 12px;
+             border: 1px solid #e5e7eb;
+             border-radius: 6px;
+             background: #f9fafb;
+             display: flex;
+             align-items: center;
+             gap: 8px;
+             min-height: 40px;
+         }
+
+         .validation-status {
+             font-size: 14px;
+             font-weight: 500;
+             display: flex;
+             align-items: center;
+             gap: 6px;
+         }
+
+         .validation-status.loading {
+             color: #3b82f6;
+         }
+
+         .validation-status.success {
+             color: #10b981;
+         }
+
+         .validation-status.error {
+             color: #ef4444;
+         }
+
+         .validation-icon {
+             font-size: 16px;
+         }
+
+         .loading-spinner {
+             width: 16px;
+             height: 16px;
+             border: 2px solid #e5e7eb;
+             border-top: 2px solid #3b82f6;
+             border-radius: 50%;
+             animation: spin 1s linear infinite;
+         }
+
+         @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+         }
+
+         .link-input {
+             width: 100%;
+             padding: 8px 12px;
+             border: 1px solid #d1d5db;
+             border-radius: 6px;
+             font-size: 14px;
+             outline: none;
+             transition: all 0.2s ease;
+         }
+
+         .link-input:focus {
+             border-color: #667eea;
+             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+         }
+
+         .link-select {
+             width: 100%;
+             padding: 8px 12px;
+             border: 1px solid #d1d5db;
+             border-radius: 6px;
+             font-size: 14px;
+             background: white;
+             outline: none;
+             transition: all 0.2s ease;
+         }
+
+         .link-select:focus {
+             border-color: #667eea;
+             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+         }
+
+         .extra-config-btn {
+             background: #0ea5e9;
+             color: white;
+             border: none;
+             padding: 8px 12px;
+             border-radius: 6px;
+             font-size: 14px;
+             cursor: pointer;
+             transition: all 0.2s ease;
+         }
+
+         .extra-config-btn:hover {
+             background: #0284c7;
+         }
+
+         .remove-link-btn {
+             background: #ef4444;
+             color: white;
+             border: none;
+             padding: 6px 12px;
+             border-radius: 4px;
+             font-size: 13px;
+             cursor: pointer;
+             transition: all 0.2s ease;
+         }
+
+         .remove-link-btn:hover {
+             background: #dc2626;
+         }
+
+         .expand-edit-btn {
+             background: #8b5cf6;
+             color: white;
+             border: none;
+             padding: 6px 12px;
+             border-radius: 4px;
+             font-size: 13px;
+             cursor: pointer;
+             transition: all 0.2s ease;
+         }
+
+         .expand-edit-btn:hover {
+             background: #7c3aed;
+         }
+
+         /* 模态框样式 */
+         .modal {
+             display: none;
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background: rgba(0, 0, 0, 0.5);
+             z-index: 1000;
+         }
+
+         .modal.show {
+             display: flex;
+             align-items: center;
+             justify-content: center;
+         }
+
+         .modal-content {
+             background: white;
+             border-radius: 8px;
+             max-width: 500px;
+             width: 90%;
+             max-height: 80vh;
+             overflow-y: auto;
+         }
+
+         .modal-header {
+             padding: 20px 24px 16px;
+             border-bottom: 1px solid #e5e7eb;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+
+         .modal-title {
+             font-size: 18px;
+             font-weight: 600;
+             color: #111827;
+             margin: 0;
+         }
+
+         .modal-close {
+             background: none;
+             border: none;
+             font-size: 24px;
+             color: #6b7280;
+             cursor: pointer;
+             padding: 0;
+             width: 24px;
+             height: 24px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+         }
+
+         .modal-close:hover {
+             color: #374151;
+         }
+
+         .modal-body {
+             padding: 20px 24px;
+         }
+
+         .modal-footer {
+             padding: 16px 24px 20px;
+             border-top: 1px solid #e5e7eb;
+             display: flex;
+             justify-content: flex-end;
+             gap: 12px;
+         }
+
+         /* 链路编辑弹窗样式 */
+         .link-edit-modal {
+             display: none;
+             position: fixed;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             background: rgba(0, 0, 0, 0.5);
+             z-index: 1001;
+             align-items: center;
+             justify-content: center;
+         }
+
+         .link-edit-modal.show {
+             display: flex;
+         }
+
+         .link-edit-modal-content {
+             background: white;
+             border-radius: 8px;
+             width: 900px;
+             max-width: 95vw;
+             max-height: 90vh;
+             overflow-y: auto;
+             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+         }
+
+         .link-edit-modal-header {
+             padding: 20px 24px 16px;
+             border-bottom: 1px solid #e5e7eb;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+
+         .link-edit-modal-title {
+             font-size: 16px;
+             font-weight: 600;
+             color: #111827;
+             margin: 0;
+         }
+
+         .link-edit-modal-close {
+             background: none;
+             border: none;
+             font-size: 24px;
+             color: #6b7280;
+             cursor: pointer;
+             padding: 0;
+             width: 24px;
+             height: 24px;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+         }
+
+         .link-edit-modal-close:hover {
+             color: #374151;
+         }
+
+         .link-edit-modal-body {
+             padding: 24px;
+         }
+
+         .link-edit-container {
+             display: grid;
+             grid-template-columns: 1fr auto 1fr;
+             gap: 24px;
+             align-items: start;
+         }
+
+         .link-endpoint {
+             border: 1px solid #e5e7eb;
+             border-radius: 8px;
+             overflow: hidden;
+         }
+
+         .endpoint-header {
+             background: #f8fafc;
+             padding: 12px 16px;
+             border-bottom: 1px solid #e5e7eb;
+             font-weight: 600;
+             color: #374151;
+             font-size: 14px;
+         }
+
+         .endpoint-content {
+             padding: 20px;
+             display: flex;
+             flex-direction: column;
+             gap: 16px;
+         }
+
+         .endpoint-field {
+             display: flex;
+             flex-direction: column;
+             gap: 6px;
+         }
+
+         .endpoint-label {
+             font-size: 14px;
+             color: #374151;
+             font-weight: 500;
+         }
+
+         .endpoint-input {
+             width: 100%;
+             padding: 8px 12px;
+             border: 1px solid #d1d5db;
+             border-radius: 6px;
+             font-size: 14px;
+             outline: none;
+             transition: all 0.2s ease;
+         }
+
+         .endpoint-input:focus {
+             border-color: #667eea;
+             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+         }
+
+         .radio-group {
+             display: flex;
+             gap: 16px;
+         }
+
+         .radio-option {
+             display: flex;
+             align-items: center;
+             gap: 6px;
+             cursor: pointer;
+         }
+
+         .radio-option input[type="radio"] {
+             margin: 0;
+         }
+
+         .radio-text {
+             font-size: 14px;
+             color: #374151;
+         }
+
+         .field-error {
+             font-size: 12px;
+             color: #ef4444;
+             min-height: 16px;
+         }
+
+         .connection-area {
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             justify-content: center;
+             min-height: 200px;
+             position: relative;
+         }
+
+         .connection-line {
+             width: 120px;
+             height: 2px;
+             background: #d1d5db;
+             position: relative;
+             cursor: pointer;
+             transition: background-color 0.2s ease;
+         }
+
+         .connection-line:hover {
+             background: #9ca3af;
+         }
+
+         .connection-line:hover .add-relay-btn {
+             opacity: 1;
+             transform: translate(-50%, -50%) scale(1);
+         }
+
+         .add-relay-btn {
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%) scale(0.8);
+             width: 32px;
+             height: 32px;
+             background: #10b981;
+             color: white;
+             border: none;
+             border-radius: 50%;
+             font-size: 18px;
+             font-weight: bold;
+             cursor: pointer;
+             opacity: 0;
+             transition: all 0.2s ease;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+         }
+
+         .add-relay-btn:hover {
+             background: #059669;
+             transform: translate(-50%, -50%) scale(1.1);
+         }
+
+         .relay-devices-container {
+             margin-top: 20px;
+             display: flex;
+             flex-direction: column;
+             gap: 16px;
+         }
+
+         .relay-device {
+             border: 1px solid #e5e7eb;
+             border-radius: 6px;
+             background: #f8fafc;
+             padding: 16px;
+             position: relative;
+         }
+
+         .relay-device-header {
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             margin-bottom: 12px;
+         }
+
+         .relay-device-title {
+             font-weight: 600;
+             color: #374151;
+             font-size: 14px;
+         }
+
+         .remove-relay-btn {
+             background: #ef4444;
+             color: white;
+             border: none;
+             border-radius: 4px;
+             padding: 4px 8px;
+             font-size: 12px;
+             cursor: pointer;
+             transition: background-color 0.2s ease;
+         }
+
+         .remove-relay-btn:hover {
+             background: #dc2626;
+         }
+
+         .relay-device-content {
+             display: flex;
+             flex-direction: column;
+             gap: 8px;
+         }
+
+         .relay-device-field {
+             display: flex;
+             flex-direction: column;
+             gap: 4px;
+         }
+
+         .relay-device-label {
+             font-size: 13px;
+             color: #6b7280;
+             font-weight: 500;
+         }
+
+         .relay-radio-group {
+             display: flex;
+             gap: 12px;
+         }
+
+         .relay-radio-option {
+             display: flex;
+             align-items: center;
+             gap: 4px;
+             cursor: pointer;
+         }
+
+         .relay-radio-option input[type="radio"] {
+             margin: 0;
+         }
+
+         .relay-radio-text {
+             font-size: 13px;
+             color: #374151;
+         }
+
+         .link-edit-modal-footer {
+             padding: 16px 24px 20px;
+             border-top: 1px solid #e5e7eb;
+             display: flex;
+             justify-content: flex-end;
+             gap: 12px;
+         }
+
+         @media (max-width: 1000px) {
+             .link-edit-modal-content {
+                 width: 95vw;
+             }
+             
+             .link-edit-container {
+                 grid-template-columns: 1fr;
+                 gap: 20px;
+             }
+             
+             .connection-area {
+                 order: 1;
+                 min-height: 60px;
+             }
+             
+             .connection-line {
+                 width: 100%;
+                 height: 2px;
+             }
+         }
+
+         /* 响应式设计 */
+         @media (max-width: 768px) {
+             .main-content {
+                 padding: 16px;
+             }
+
+             .form-container {
+                 padding: 20px;
+             }
+
+             .form-grid {
+                 grid-template-columns: 1fr;
+             }
+
+             .steps {
+                 flex-direction: column;
+                 gap: 16px;
+             }
+
+             .steps::before {
+                 display: none;
+             }
+
+             .batch-grid {
+                 grid-template-columns: 1fr;
+             }
+
+             .operation-blocks-header {
+                 flex-direction: column;
+                 gap: 12px;
+                 align-items: stretch;
+             }
+
+             .block-basic-info {
+                 grid-template-columns: 1fr;
+             }
+
+             .devices-table {
+                 overflow-x: auto;
+             }
+
+             .devices-table th,
+             .devices-table td {
+                 padding: 6px 4px;
+                 font-size: 12px;
+             }
+         }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="logo">DCIM运维系统</div>
+        <ul class="nav-menu">
+            <li class="nav-item">资源管理</li>
+            <li class="nav-item active">物理资源调度中心</li>
+            <li class="nav-item">设备监控</li>
+            <li class="nav-item">运维报告</li>
+            <li class="nav-item">系统设置</li>
+        </ul>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <button class="back-btn" onclick="window.location.href='physical-resource-scheduling.html'" title="返回列表">
+                ←
+            </button>
+            <h1 class="page-title">新增调度任务</h1>
+        </div>
+
+        <!-- 步骤条 -->
+        <div class="steps-container">
+            <div class="steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-title">调度任务登记</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-title">设备调度管理</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-title">链路拓扑调整</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 表单内容 -->
+        <div class="form-container">
+            <!-- 第一步：调度任务登记 -->
+            <div id="step1" class="step-content">
+                <div class="form-section">
+                    <h3 class="form-section-title">基础信息</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                建设单号 <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" id="constructionId" placeholder="请输入建设单号">
+                            <div class="form-error" id="constructionIdError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                业务类型 <span class="required">*</span>
+                            </label>
+                            <select class="form-select" id="operationType">
+                                <option value="">请选择业务类型</option>
+                                <option value="UP">上架</option>
+                                <option value="DOWN">下架</option>
+                                <option value="CUTOVER">割接</option>
+                            </select>
+                            <div class="form-error" id="operationTypeError"></div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                业务标题 <span class="required">*</span>
+                            </label>
+                            <input type="text" class="form-input" id="title" placeholder="请输入业务标题">
+                            <div class="form-error" id="titleError"></div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label class="form-label">
+                                业务描述 <span class="required">*</span>
+                            </label>
+                            <textarea class="form-textarea" id="description" placeholder="请简要描述业务内容（10-50字）"></textarea>
+                            <div class="form-help">字数限制：10-50字</div>
+                            <div class="form-error" id="descriptionError"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="form-section-title">执行时间</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                开始时间 <span class="required">*</span>
+                            </label>
+                            <input type="datetime-local" class="form-input" id="executionStart">
+                            <div class="form-error" id="executionStartError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                结束时间 <span class="required">*</span>
+                            </label>
+                            <input type="datetime-local" class="form-input" id="executionEnd">
+                            <div class="form-error" id="executionEndError"></div>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="muteAlerts">
+                        <label for="muteAlerts">是否在执行时间内屏蔽所有相关告警信息</label>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="form-section-title">附件上传</h3>
+                    <div class="file-upload" id="fileUpload">
+                        <div class="file-upload-icon">📎</div>
+                        <div class="file-upload-text">
+                            点击或拖拽上传Excel文档<br>
+                            <small>支持格式：xlsx、xls</small>
+                        </div>
+                        <input type="file" id="attachment" accept=".xlsx,.xls" style="display: none;">
+                    </div>
+                    <div id="uploadedFiles"></div>
+                </div>
+
+                <!-- 批次号管理 -->
+                <div class="batch-management">
+                    <div class="batch-header">
+                        <div class="batch-title">批次管理</div>
+                        <button class="add-batch-btn" onclick="openBatchModal()">
+                            <span>+</span>
+                            添加批次
+                        </button>
+                    </div>
+                    <div class="batch-grid" id="batchGrid">
+                        <!-- 批次卡片将通过JavaScript动态添加 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第二步：设备调度管理 -->
+            <div id="step2" class="step-content" style="display: none;">
+                <div class="form-section">
+                    <h3 class="form-section-title">设备调度管理</h3>
+                    
+                    <!-- 操作类型块管理 -->
+                    <div class="operation-blocks-container">
+                        <div class="operation-blocks-header">
+                            <div class="blocks-info">
+                                <span>操作类型块：<span id="totalBlocks">0</span> 个</span>
+                                <span>总设备数：<span id="totalDevices">0</span> 台</span>
+                            </div>
+                            <button class="btn btn-primary" onclick="addOperationBlock()">
+                                <span>+</span>
+                                添加操作类型块
+                            </button>
+                        </div>
+                        
+                        <div id="operationBlocksContainer">
+                            <!-- 操作类型块将通过JavaScript动态添加 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第三步：链路拓扑调整 -->
+            <div id="step3" class="step-content" style="display: none;">
+                <div class="form-section">
+                    <h3 class="form-section-title">链路拓扑调整</h3>
+                    
+                    <!-- 操作类型块管理 -->
+                    <div class="topology-blocks-container">
+                        <div class="topology-blocks-header">
+                            <div class="blocks-info">
+                                <span>操作类型块：<span id="totalTopologyBlocks">0</span> 个</span>
+                                <span>总链路数：<span id="totalLinks">0</span> 条</span>
+                            </div>
+                            <button class="btn btn-primary" onclick="addTopologyBlock()">
+                                <span>+</span>
+                                添加操作类型块
+                            </button>
+                        </div>
+                        
+                        <div id="topologyBlocksContainer">
+                            <!-- 操作类型块将通过JavaScript动态添加 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="form-actions">
+            <button class="btn btn-outline" id="prevBtn" onclick="previousStep()" disabled>
+                ← 上一步
+            </button>
+            <div>
+                <button class="btn btn-outline" onclick="saveDraft()">保存草稿</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                    下一步 →
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加批次模态框 -->
+    <div class="modal" id="batchModal">
+        <div class="modal-content">
+                         <div class="modal-header">
+                 <h3 class="modal-title" id="modalTitle">添加批次</h3>
+                 <button class="modal-close" onclick="closeBatchModal()">&times;</button>
+             </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">批次号 <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="batchNumber" placeholder="请输入批次号">
+                    <div class="form-error" id="batchNumberError"></div>
+                </div>
+                                 <div class="form-group">
+                     <label class="form-label">批次描述 <span class="required">*</span></label>
+                     <textarea class="form-textarea" id="batchDescription" placeholder="请输入批次描述"></textarea>
+                     <div class="form-error" id="batchDescriptionError"></div>
+                 </div>
+                 
+                 <div class="form-group">
+                     <label class="form-label">是否自动解析 EXCEL</label>
+                     <div class="radio-group">
+                         <label class="radio-item">
+                             <input type="radio" name="autoParseExcel" value="no" checked onchange="toggleExcelUpload(this.value)">
+                             <span>否</span>
+                         </label>
+                         <label class="radio-item">
+                             <input type="radio" name="autoParseExcel" value="yes" onchange="toggleExcelUpload(this.value)">
+                             <span>是</span>
+                         </label>
+                     </div>
+                 </div>
+                 
+                 <div class="form-group" id="batchExcelUploadGroup" style="display: none;">
+                     <label class="form-label">上传 EXCEL 文件</label>
+                     <div class="file-upload" id="batchFileUpload">
+                         <div class="file-upload-icon">📎</div>
+                         <div class="file-upload-text">
+                             点击或拖拽上传Excel文档<br>
+                             <small>支持格式：xlsx、xls</small>
+                         </div>
+                         <input type="file" id="batchExcelFile" accept=".xlsx,.xls" style="display: none;">
+                     </div>
+                     <div id="batchUploadedFiles"></div>
+                 </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeBatchModal()">取消</button>
+                <button class="btn btn-primary" onclick="addBatch()">添加</button>
+            </div>
+                 </div>
+     </div>
+
+     <!-- 扩展配置模态框 -->
+     <div class="modal" id="extraConfigModal">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h3 class="modal-title">扩展配置</h3>
+                 <button class="modal-close" onclick="closeExtraConfigModal()">&times;</button>
+             </div>
+             <div class="modal-body">
+                 <div class="form-group">
+                     <label class="form-label">SID/CID</label>
+                     <input type="text" class="form-input" id="sidCid" placeholder="格式示例: SID-1001 或 CID-2001">
+                 </div>
+                 
+                 <div class="form-group">
+                     <label class="form-label">连接标签编码</label>
+                     <input type="text" class="form-input" id="connectionCode" placeholder="如: CN-BJ-PRI-001">
+                 </div>
+                 
+                 <div class="form-group">
+                     <label class="form-label">国家</label>
+                     <select class="form-select" id="country" onchange="updateCityOptions()">
+                         <option value="CN">中国</option>
+                         <option value="US">美国</option>
+                         <option value="JP">日本</option>
+                         <option value="KR">韩国</option>
+                         <option value="SG">新加坡</option>
+                     </select>
+                 </div>
+                 
+                 <div class="form-group">
+                     <label class="form-label">城市</label>
+                     <select class="form-select" id="city">
+                         <!-- 城市选项将通过JavaScript动态加载 -->
+                     </select>
+                 </div>
+             </div>
+             <div class="modal-footer">
+                 <button class="btn btn-outline" onclick="closeExtraConfigModal()">取消</button>
+                 <button class="btn btn-primary" onclick="saveExtraConfig()">保存</button>
+             </div>
+         </div>
+     </div>
+
+     <!-- 链路编辑模态框 -->
+     <div class="link-edit-modal" id="linkEditModal">
+         <div class="link-edit-modal-content">
+             <div class="link-edit-modal-header">
+                 <h3 class="link-edit-modal-title">连接信息编辑</h3>
+                 <button class="link-edit-modal-close" onclick="closeLinkEditModal()">&times;</button>
+             </div>
+             <div class="link-edit-modal-body">
+                 <div class="link-edit-container">
+                     <!-- A端 -->
+                     <div class="link-endpoint">
+                         <div class="endpoint-header">A端</div>
+                         <div class="endpoint-content">
+                             <div class="endpoint-field">
+                                 <label class="endpoint-label">资产编码</label>
+                                 <input type="text" class="endpoint-input" id="editADeviceCode" placeholder="请输入">
+                                 <div class="field-error" id="editADeviceCodeError"></div>
+                             </div>
+                             
+                             <div class="endpoint-field">
+                                 <label class="endpoint-label">端口号</label>
+                                 <input type="text" class="endpoint-input" id="editAPortNumber" placeholder="请输入">
+                                 <div class="field-error" id="editAPortNumberError"></div>
+                             </div>
+                             
+                             <div class="endpoint-field">
+                                 <label class="endpoint-label">端口模块</label>
+                                 <input type="text" class="endpoint-input" id="editAPortModule" placeholder="请输入">
+                                 <div class="field-error" id="editAPortModuleError"></div>
+                             </div>
+                             
+                             <div class="endpoint-field">
+                                 <label class="endpoint-label">是否上联PP架</label>
+                                 <div class="radio-group">
+                                     <label class="radio-option">
+                                         <input type="radio" name="editAIsPpFrame" value="false" checked>
+                                         <span class="radio-text">否</span>
+                                     </label>
+                                     <label class="radio-option">
+                                         <input type="radio" name="editAIsPpFrame" value="true">
+                                         <span class="radio-text">是</span>
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     
+                     <!-- 连接线区域 -->
+                     <div class="connection-area">
+                         <div class="connection-line" id="connectionLine">
+                             <div class="add-relay-btn" id="addRelayBtn" onclick="addRelayDevice()">+</div>
+                         </div>
+                         
+                         <!-- 中继设备容器 -->
+                         <div class="relay-devices-container" id="relayDevicesContainer">
+                             <!-- 中继设备将通过JavaScript动态添加 -->
+                         </div>
+                     </div>
+                     
+                     <!-- Z端 -->
+                     <div class="link-endpoint">
+                         <div class="endpoint-header">Z端</div>
+                         <div class="endpoint-content">
+                             <div class="endpoint-field">
+                                 <label class="endpoint-label">资产编码</label>
+                                 <input type="text" class="endpoint-input" id="editZDeviceCode" placeholder="请输入">
+                                 <div class="field-error" id="editZDeviceCodeError"></div>
+                             </div>
+                             
+                             <div class="endpoint-field">
+                                 <label class="endpoint-label">端口号</label>
+                                 <input type="text" class="endpoint-input" id="editZPortNumber" placeholder="请输入">
+                                 <div class="field-error" id="editZPortNumberError"></div>
+                             </div>
+                             
+                             <div class="endpoint-field">
+                                 <label class="endpoint-label">端口模块</label>
+                                 <input type="text" class="endpoint-input" id="editZPortModule" placeholder="请输入">
+                                 <div class="field-error" id="editZPortModuleError"></div>
+                             </div>
+                             
+                             <div class="endpoint-field">
+                                 <label class="endpoint-label">是否上联PP架</label>
+                                 <div class="radio-group">
+                                     <label class="radio-option">
+                                         <input type="radio" name="editZIsPpFrame" value="false" checked>
+                                         <span class="radio-text">否</span>
+                                     </label>
+                                     <label class="radio-option">
+                                         <input type="radio" name="editZIsPpFrame" value="true">
+                                         <span class="radio-text">是</span>
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="link-edit-modal-footer">
+                 <button class="btn btn-outline" onclick="closeLinkEditModal()">取消</button>
+                 <button class="btn btn-primary" onclick="saveLinkEdit()">确定</button>
+             </div>
+         </div>
+     </div>
+
+     <script>
+                 // 全局状态
+         let currentStep = 1;
+         let batches = [];
+         let batchCounter = 1;
+         let operationBlocks = [];
+         let blockCounter = 1;
+         let topologyBlocks = [];
+         let topologyBlockCounter = 1;
+         let currentExtraConfigLink = null;
+         let currentEditingLink = null;
+         let relayDeviceCounter = 1;
+         
+         // 模拟数据
+         const mockAssetData = {
+             'AS001': { sn: 'SN123456789', model: 'Dell PowerEdge R740' },
+             'AS002': { sn: 'SN987654321', model: 'HP ProLiant DL380' },
+             'AS003': { sn: 'SN456789123', model: 'Cisco Catalyst 9300' },
+             'AS004': { sn: 'SN789123456', model: 'Huawei CE6800' },
+             'AS005': { sn: 'SN321654987', model: 'Dell PowerEdge R640' },
+             'AS006': { sn: 'SN111222333', model: 'IBM X3650 M5' },
+             'AS007': { sn: 'SN444555666', model: 'Lenovo ThinkSystem SR650' },
+             'AS008': { sn: 'SN777888999', model: 'Cisco Nexus 9000' },
+             'AS009': { sn: 'SN000111222', model: 'Huawei S12700' },
+             'AS010': { sn: 'SN333444555', model: 'Dell EMC PowerEdge R750' }
+         };
+         
+         const roomOptions = ['A机房', 'B机房', 'C机房', 'D机房'];
+         const cabinetOptions = ['CAB-A01', 'CAB-A02', 'CAB-B01', 'CAB-B02', 'CAB-C01', 'CAB-C02'];
+         const companyOptions = ['阿里巴巴', '腾讯', '百度', '京东', '字节跳动'];
+         
+         // 城市数据
+         const cityOptions = {
+             'CN': ['北京', '上海', '广州', '深圳', '杭州', '南京', '成都', '武汉'],
+             'US': ['纽约', '洛杉矶', '芝加哥', '旧金山', '西雅图', '波士顿'],
+             'JP': ['东京', '大阪', '京都', '横滨', '名古屋', '神户'],
+             'KR': ['首尔', '釜山', '仁川', '大邱', '大田'],
+             'SG': ['新加坡']
+         };
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 设置最小日期时间为当前时间
+            const now = new Date();
+            const minDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+            document.getElementById('executionStart').min = minDateTime;
+            document.getElementById('executionEnd').min = minDateTime;
+
+            // 文件上传事件
+            setupFileUpload();
+            
+            // 表单验证事件
+            setupFormValidation();
+            
+            // 初始化城市选项
+            updateCityOptions();
+        });
+
+        // 步骤导航
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < 3) {
+                    currentStep++;
+                    updateStepDisplay();
+                } else {
+                    // 最后一步，提交表单
+                    submitForm();
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+            }
+        }
+
+        function updateStepDisplay() {
+            // 更新步骤条状态
+            document.querySelectorAll('.step').forEach((step, index) => {
+                const stepNumber = index + 1;
+                step.classList.remove('active', 'completed');
+                
+                if (stepNumber < currentStep) {
+                    step.classList.add('completed');
+                } else if (stepNumber === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+
+            // 显示对应步骤内容
+            document.querySelectorAll('.step-content').forEach((content, index) => {
+                content.style.display = index + 1 === currentStep ? 'block' : 'none';
+            });
+
+            // 更新按钮状态
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentStep === 3) {
+                nextBtn.textContent = '确认提交';
+                nextBtn.innerHTML = '确认提交 ✓';
+            } else {
+                nextBtn.innerHTML = '下一步 →';
+            }
+        }
+
+        // 表单验证
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                return validateStep1();
+            } else if (currentStep === 2) {
+                return validateStep2();
+            } else if (currentStep === 3) {
+                return validateStep3();
+            }
+            return true;
+        }
+
+        function validateStep1() {
+            let isValid = true;
+            
+            // 清除之前的错误
+            document.querySelectorAll('.form-error').forEach(error => error.textContent = '');
+
+            // 验证建设单号
+            const constructionId = document.getElementById('constructionId').value.trim();
+            if (!constructionId) {
+                document.getElementById('constructionIdError').textContent = '请输入建设单号';
+                isValid = false;
+            }
+
+            // 验证业务类型
+            const operationType = document.getElementById('operationType').value;
+            if (!operationType) {
+                document.getElementById('operationTypeError').textContent = '请选择业务类型';
+                isValid = false;
+            }
+
+            // 验证业务标题
+            const title = document.getElementById('title').value.trim();
+            if (!title) {
+                document.getElementById('titleError').textContent = '请输入业务标题';
+                isValid = false;
+            }
+
+            // 验证业务描述
+            const description = document.getElementById('description').value.trim();
+            if (!description) {
+                document.getElementById('descriptionError').textContent = '请输入业务描述';
+                isValid = false;
+            } else if (description.length < 10) {
+                document.getElementById('descriptionError').textContent = '业务描述至少需要10个字符';
+                isValid = false;
+            } else if (description.length > 50) {
+                document.getElementById('descriptionError').textContent = '业务描述不能超过50个字符';
+                isValid = false;
+            }
+
+            // 验证执行时间
+            const executionStart = document.getElementById('executionStart').value;
+            const executionEnd = document.getElementById('executionEnd').value;
+            
+            if (!executionStart) {
+                document.getElementById('executionStartError').textContent = '请选择开始时间';
+                isValid = false;
+            } else {
+                const startTime = new Date(executionStart);
+                const now = new Date();
+                if (startTime <= now) {
+                    document.getElementById('executionStartError').textContent = '开始时间必须是将来的时间';
+                    isValid = false;
+                }
+            }
+
+            if (!executionEnd) {
+                document.getElementById('executionEndError').textContent = '请选择结束时间';
+                isValid = false;
+            } else if (executionStart && executionEnd) {
+                const startTime = new Date(executionStart);
+                const endTime = new Date(executionEnd);
+                if (endTime <= startTime) {
+                    document.getElementById('executionEndError').textContent = '结束时间必须晚于开始时间';
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
+                 function validateStep2() {
+             // 验证操作类型块
+             if (operationBlocks.length === 0) {
+                 alert('请至少添加一个操作类型块');
+                 return false;
+             }
+             
+             let isValid = true;
+             for (let block of operationBlocks) {
+                 // 验证基础信息
+                 if (!block.operationType) {
+                     alert(`操作类型块 ${block.id} 未选择操作类型`);
+                     isValid = false;
+                     break;
+                 }
+                 
+                 if (!block.deviceType) {
+                     alert(`操作类型块 ${block.id} 未选择设备类型`);
+                     isValid = false;
+                     break;
+                 }
+                 
+                 if (!block.room) {
+                     alert(`操作类型块 ${block.id} 未选择机房`);
+                     isValid = false;
+                     break;
+                 }
+                 
+                 // 验证设备信息
+                 if (block.devices.length === 0) {
+                     alert(`操作类型块 ${block.id} 至少需要添加一台设备`);
+                     isValid = false;
+                     break;
+                 }
+                 
+                 // 验证每台设备的必填字段
+                 for (let device of block.devices) {
+                     if (!device.assetId) {
+                         alert(`操作类型块 ${block.id} 中有设备未填写资产编号`);
+                         isValid = false;
+                         break;
+                     }
+                     if (!device.cabinet) {
+                         alert(`操作类型块 ${block.id} 中有设备未选择机柜`);
+                         isValid = false;
+                         break;
+                     }
+                     if (!device.startU) {
+                         alert(`操作类型块 ${block.id} 中有设备未选择起始U位`);
+                         isValid = false;
+                         break;
+                     }
+                     if (!device.ownerCompany) {
+                         alert(`操作类型块 ${block.id} 中有设备未选择使用公司`);
+                         isValid = false;
+                         break;
+                     }
+                     
+                     // 验证IP格式
+                     if (device.privateIp && !isValidIP(device.privateIp)) {
+                         alert(`操作类型块 ${block.id} 中有设备的内网IP格式不正确`);
+                         isValid = false;
+                         break;
+                     }
+                     if (device.publicIp && !isValidIP(device.publicIp)) {
+                         alert(`操作类型块 ${block.id} 中有设备的公网IP格式不正确`);
+                         isValid = false;
+                         break;
+                     }
+                 }
+                 
+                 if (!isValid) break;
+             }
+             
+             return isValid;
+         }
+
+                 function validateStep3() {
+             // 验证链路拓扑调整
+             if (topologyBlocks.length === 0) {
+                 alert('请至少添加一个操作类型块');
+                 return false;
+             }
+             
+             let isValid = true;
+             for (let block of topologyBlocks) {
+                 // 验证基础信息
+                 if (!block.operationType) {
+                     alert(`操作类型块 ${block.id} 未选择操作类型`);
+                     isValid = false;
+                     break;
+                 }
+                 
+                 if (!block.deviceType) {
+                     alert(`操作类型块 ${block.id} 未选择设备类型`);
+                     isValid = false;
+                     break;
+                 }
+                 
+                 if (!block.room) {
+                     alert(`操作类型块 ${block.id} 未选择机房`);
+                     isValid = false;
+                     break;
+                 }
+                 
+                 // 验证链路信息
+                 if (block.links.length === 0) {
+                     alert(`操作类型块 ${block.id} 至少需要添加一条链路`);
+                     isValid = false;
+                     break;
+                 }
+                 
+                 // 验证每条链路的必填字段
+                 for (let link of block.links) {
+                     if (!link.channelName) {
+                         alert(`操作类型块 ${block.id} 中有链路未填写通道名称`);
+                         isValid = false;
+                         break;
+                     }
+                     if (!link.aEnd.deviceCode) {
+                         alert(`操作类型块 ${block.id} 中有链路A端未填写设备编码`);
+                         isValid = false;
+                         break;
+                     }
+                     if (!link.zEnd.deviceCode) {
+                         alert(`操作类型块 ${block.id} 中有链路Z端未填写设备编码`);
+                         isValid = false;
+                         break;
+                     }
+                 }
+                 
+                 if (!isValid) break;
+             }
+             
+             return isValid;
+         }
+
+        // 表单验证事件设置
+        function setupFormValidation() {
+            // 描述字数实时统计
+            const description = document.getElementById('description');
+            description.addEventListener('input', function() {
+                const length = this.value.length;
+                const helpText = this.nextElementSibling;
+                helpText.textContent = `字数限制：10-50字 (当前：${length}字)`;
+                
+                if (length > 50) {
+                    helpText.style.color = '#ef4444';
+                } else if (length < 10) {
+                    helpText.style.color = '#f59e0b';
+                } else {
+                    helpText.style.color = '#10b981';
+                }
+            });
+
+            // 结束时间自动填充
+            document.getElementById('executionStart').addEventListener('change', function() {
+                const startTime = new Date(this.value);
+                if (startTime) {
+                    // 默认结束时间为开始时间 + 2小时
+                    const endTime = new Date(startTime.getTime() + 2 * 60 * 60 * 1000);
+                    const endTimeString = endTime.toISOString().slice(0, 16);
+                    document.getElementById('executionEnd').value = endTimeString;
+                }
+            });
+        }
+
+        // 文件上传
+        function setupFileUpload() {
+            const fileUpload = document.getElementById('fileUpload');
+            const fileInput = document.getElementById('attachment');
+            
+            fileUpload.addEventListener('click', () => fileInput.click());
+            
+            fileUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUpload.classList.add('dragover');
+            });
+            
+            fileUpload.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                fileUpload.classList.remove('dragover');
+            });
+            
+            fileUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUpload.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleFileUpload(file) {
+            // 验证文件类型
+            const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('只能上传Excel文件（.xlsx, .xls）');
+                return;
+            }
+
+            // 验证文件大小（最大10MB）
+            if (file.size > 10 * 1024 * 1024) {
+                alert('文件大小不能超过10MB');
+                return;
+            }
+
+            displayUploadedFile(file);
+        }
+
+        function displayUploadedFile(file) {
+            const uploadedFiles = document.getElementById('uploadedFiles');
+            uploadedFiles.innerHTML = `
+                <div class="uploaded-file">
+                    <span>📄 ${file.name}</span>
+                    <button class="remove-file" onclick="removeFile()">&times;</button>
+                </div>
+            `;
+        }
+
+        function removeFile() {
+            document.getElementById('uploadedFiles').innerHTML = '';
+            document.getElementById('attachment').value = '';
+        }
+
+        // 批次管理
+                 function openBatchModal() {
+             document.getElementById('batchModal').classList.add('show');
+             document.getElementById('modalTitle').textContent = '添加批次';
+             document.getElementById('batchNumber').value = '';
+             document.getElementById('batchDescription').value = '';
+             document.querySelector('input[name="autoParseExcel"][value="no"]').checked = true;
+             document.getElementById('batchExcelUploadGroup').style.display = 'none';
+             document.getElementById('batchExcelFile').value = '';
+             document.getElementById('batchUploadedFiles').innerHTML = '';
+             document.getElementById('batchModal').removeAttribute('data-editing-id');
+             document.querySelectorAll('#batchModal .form-error').forEach(error => error.textContent = '');
+         }
+
+        function closeBatchModal() {
+            document.getElementById('batchModal').classList.remove('show');
+        }
+
+                 function addBatch() {
+             const batchNumber = document.getElementById('batchNumber').value.trim();
+             const batchDescription = document.getElementById('batchDescription').value.trim();
+             const autoParseExcel = document.querySelector('input[name="autoParseExcel"]:checked').value;
+             const excelFile = document.getElementById('batchExcelFile').files[0];
+             const editingId = document.getElementById('batchModal').getAttribute('data-editing-id');
+             
+             // 清除错误信息
+             document.getElementById('batchNumberError').textContent = '';
+             document.getElementById('batchDescriptionError').textContent = '';
+             
+             let isValid = true;
+             
+             if (!batchNumber) {
+                 document.getElementById('batchNumberError').textContent = '请输入批次号';
+                 isValid = false;
+             } else if (batches.some(batch => batch.number === batchNumber && batch.id != editingId)) {
+                 document.getElementById('batchNumberError').textContent = '批次号已存在';
+                 isValid = false;
+             }
+             
+             if (!batchDescription) {
+                 document.getElementById('batchDescriptionError').textContent = '请输入批次描述';
+                 isValid = false;
+             }
+             
+             if (isValid) {
+                 if (editingId) {
+                     // 编辑模式：更新现有批次
+                     const batchIndex = batches.findIndex(b => b.id == editingId);
+                     if (batchIndex !== -1) {
+                         batches[batchIndex] = {
+                             ...batches[batchIndex],
+                             number: batchNumber,
+                             description: batchDescription,
+                             autoParseExcel: autoParseExcel,
+                             excelFileName: excelFile ? excelFile.name : (batches[batchIndex].excelFileName || '')
+                         };
+                     }
+                 } else {
+                     // 新增模式：创建新批次
+                     const batch = {
+                         id: batchCounter++,
+                         number: batchNumber,
+                         description: batchDescription,
+                         autoParseExcel: autoParseExcel,
+                         excelFileName: excelFile ? excelFile.name : '',
+                         createTime: new Date().toLocaleString('zh-CN'),
+                         creator: '当前用户'
+                     };
+                     
+                     batches.push(batch);
+                 }
+                 
+                 renderBatches();
+                 closeBatchModal();
+             }
+         }
+         
+         // 切换Excel上传框显示状态
+         function toggleExcelUpload(value) {
+             const uploadGroup = document.getElementById('batchExcelUploadGroup');
+             if (value === 'yes') {
+                 uploadGroup.style.display = 'block';
+                 setupBatchFileUpload();
+             } else {
+                 uploadGroup.style.display = 'none';
+                 document.getElementById('batchExcelFile').value = '';
+                 document.getElementById('batchUploadedFiles').innerHTML = '';
+             }
+         }
+         
+         // 设置批次文件上传
+         function setupBatchFileUpload() {
+             const fileUpload = document.getElementById('batchFileUpload');
+             const fileInput = document.getElementById('batchExcelFile');
+             
+             fileUpload.onclick = () => fileInput.click();
+             
+             fileUpload.ondragover = (e) => {
+                 e.preventDefault();
+                 fileUpload.classList.add('dragover');
+             };
+             
+             fileUpload.ondragleave = (e) => {
+                 e.preventDefault();
+                 fileUpload.classList.remove('dragover');
+             };
+             
+             fileUpload.ondrop = (e) => {
+                 e.preventDefault();
+                 fileUpload.classList.remove('dragover');
+                 
+                 const files = e.dataTransfer.files;
+                 if (files.length > 0) {
+                     handleBatchFileUpload(files[0]);
+                 }
+             };
+             
+             fileInput.onchange = (e) => {
+                 if (e.target.files.length > 0) {
+                     handleBatchFileUpload(e.target.files[0]);
+                 }
+             };
+         }
+         
+         function handleBatchFileUpload(file) {
+             // 验证文件类型
+             const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
+             if (!allowedTypes.includes(file.type)) {
+                 alert('只能上传Excel文件（.xlsx, .xls）');
+                 return;
+             }
+
+             // 验证文件大小（最大10MB）
+             if (file.size > 10 * 1024 * 1024) {
+                 alert('文件大小不能超过10MB');
+                 return;
+             }
+
+             displayBatchUploadedFile(file);
+         }
+
+         function displayBatchUploadedFile(file) {
+             const uploadedFiles = document.getElementById('batchUploadedFiles');
+             uploadedFiles.innerHTML = `
+                 <div class="uploaded-file">
+                     <span>📄 ${file.name}</span>
+                     <button class="remove-file" onclick="removeBatchFile()">&times;</button>
+                 </div>
+             `;
+         }
+
+                  function removeBatchFile() {
+             document.getElementById('batchUploadedFiles').innerHTML = '';
+             document.getElementById('batchExcelFile').value = '';
+         }
+
+         // 编辑批次
+         function editBatch(batchId) {
+             const batch = batches.find(b => b.id === batchId);
+             if (batch) {
+                 document.getElementById('batchModal').classList.add('show');
+                 document.getElementById('modalTitle').textContent = '编辑批次';
+                 
+                 // 填充现有数据
+                 document.getElementById('batchNumber').value = batch.number;
+                 document.getElementById('batchDescription').value = batch.description;
+                 
+                 // 设置自动解析Excel选项
+                 document.querySelector(`input[name="autoParseExcel"][value="${batch.autoParseExcel || 'no'}"]`).checked = true;
+                 
+                 // 显示/隐藏Excel上传框
+                 toggleExcelUpload(batch.autoParseExcel || 'no');
+                 
+                 // 如果有Excel文件，显示文件信息
+                 if (batch.excelFileName) {
+                     document.getElementById('batchUploadedFiles').innerHTML = `
+                         <div class="uploaded-file">
+                             <span>📄 ${batch.excelFileName}</span>
+                             <button class="remove-file" onclick="removeBatchFile()">&times;</button>
+                         </div>
+                     `;
+                 }
+                 
+                 // 设置当前编辑的批次ID
+                 document.getElementById('batchModal').setAttribute('data-editing-id', batchId);
+                 
+                 document.querySelectorAll('#batchModal .form-error').forEach(error => error.textContent = '');
+             }
+         }
+
+         function removeBatch(batchId) {
+            if (confirm('确定要删除这个批次吗？')) {
+                batches = batches.filter(batch => batch.id !== batchId);
+                renderBatches();
+            }
+        }
+
+                 function renderBatches() {
+             const batchGrid = document.getElementById('batchGrid');
+             
+             if (batches.length === 0) {
+                 batchGrid.innerHTML = '<p style="color: #6b7280; text-align: center; grid-column: 1 / -1; padding: 20px;">暂无批次信息</p>';
+                 return;
+             }
+             
+             batchGrid.innerHTML = batches.map(batch => `
+                 <div class="batch-card">
+                     <div class="batch-card-header">
+                         <div class="batch-number">批次${batch.number}</div>
+                         <div style="display: flex; gap: 8px;">
+                             <button class="btn btn-outline btn-sm" onclick="editBatch(${batch.id})" style="padding: 2px 6px; font-size: 11px;">编辑</button>
+                             <button class="remove-batch-btn" onclick="removeBatch(${batch.id})">&times;</button>
+                         </div>
+                     </div>
+                     <div class="batch-info">
+                         <div class="batch-info-item">
+                             <span class="batch-info-label">描述：</span>
+                             <span class="batch-info-value">${batch.description}</span>
+                         </div>
+                         ${batch.excelFileName ? `
+                         <div class="batch-info-item">
+                             <span class="batch-info-label">Excel附件：</span>
+                             <span class="batch-info-value" style="color: #0369a1;">📄 ${batch.excelFileName}</span>
+                         </div>
+                         ` : ''}
+                         <div class="batch-info-item">
+                             <span class="batch-info-label">创建时间：</span>
+                             <span class="batch-info-value">${batch.createTime}</span>
+                         </div>
+                         <div class="batch-info-item">
+                             <span class="batch-info-label">创建人：</span>
+                             <span class="batch-info-value">${batch.creator}</span>
+                         </div>
+                     </div>
+                 </div>
+             `).join('');
+         }
+
+        // 保存草稿
+        function saveDraft() {
+            const formData = collectFormData();
+            localStorage.setItem('taskDraft', JSON.stringify(formData));
+            alert('草稿已保存！');
+        }
+
+                 // 收集表单数据
+         function collectFormData() {
+             return {
+                 step1: {
+                     constructionId: document.getElementById('constructionId').value,
+                     operationType: document.getElementById('operationType').value,
+                     title: document.getElementById('title').value,
+                     description: document.getElementById('description').value,
+                     executionStart: document.getElementById('executionStart').value,
+                     executionEnd: document.getElementById('executionEnd').value,
+                     muteAlerts: document.getElementById('muteAlerts').checked,
+                     attachment: document.getElementById('attachment').files[0]?.name || '',
+                     batches: batches
+                 },
+                 step2: {
+                     operationBlocks: operationBlocks,
+                     totalBlocks: operationBlocks.length,
+                     totalDevices: operationBlocks.reduce((sum, block) => sum + block.devices.length, 0)
+                 },
+                 step3: {
+                     topologyBlocks: topologyBlocks,
+                     totalTopologyBlocks: topologyBlocks.length,
+                     totalLinks: topologyBlocks.reduce((sum, block) => sum + block.links.length, 0)
+                 }
+             };
+         }
+
+        // 提交表单
+        function submitForm() {
+            const formData = collectFormData();
+            console.log('提交的表单数据：', formData);
+            
+            if (confirm('确定要提交调度任务吗？')) {
+                // 这里可以发送数据到后端
+                alert('调度任务创建成功！');
+                window.location.href = 'physical-resource-scheduling.html';
+            }
+        }
+
+        // ===== 链路拓扑调整功能 =====
+        
+        // 添加操作类型块（拓扑）
+        function addTopologyBlock() {
+            const block = {
+                id: topologyBlockCounter++,
+                operationType: '',
+                deviceType: '',
+                room: '',
+                links: []
+            };
+            
+            topologyBlocks.push(block);
+            renderTopologyBlocks();
+            updateTopologyStatistics();
+        }
+        
+        // 删除操作类型块（拓扑）
+        function removeTopologyBlock(blockId) {
+            if (confirm('确定要删除这个操作类型块吗？将同时删除其中的所有链路信息。')) {
+                topologyBlocks = topologyBlocks.filter(block => block.id !== blockId);
+                renderTopologyBlocks();
+                updateTopologyStatistics();
+            }
+        }
+        
+        // 渲染拓扑操作类型块
+        function renderTopologyBlocks() {
+            const container = document.getElementById('topologyBlocksContainer');
+            
+            if (topologyBlocks.length === 0) {
+                container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">暂无操作类型块，请点击上方按钮添加</p>';
+                return;
+            }
+            
+            container.innerHTML = topologyBlocks.map(block => `
+                <div class="topology-block" data-block-id="${block.id}">
+                    <div class="topology-block-header">
+                        <div class="block-title">操作类型块 ${block.id}</div>
+                        <div class="block-actions">
+                            <button class="btn btn-danger btn-sm" onclick="removeTopologyBlock(${block.id})">删除</button>
+                        </div>
+                    </div>
+                    <div class="operation-block-content">
+                        <div class="block-basic-info">
+                            <div class="form-group">
+                                <label class="form-label">操作类型 <span class="required">*</span></label>
+                                <select class="form-select" onchange="updateTopologyBlockOperationType(${block.id}, this.value)">
+                                    <option value="">请选择操作类型</option>
+                                    <option value="ADD" ${block.operationType === 'ADD' ? 'selected' : ''}>新增</option>
+                                    <option value="REMOVE" ${block.operationType === 'REMOVE' ? 'selected' : ''}>退订</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">设备类型 <span class="required">*</span></label>
+                                <select class="form-select" onchange="updateTopologyBlockDeviceType(${block.id}, this.value)">
+                                    <option value="">请选择设备类型</option>
+                                    <option value="server" ${block.deviceType === 'server' ? 'selected' : ''}>服务器</option>
+                                    <option value="network" ${block.deviceType === 'network' ? 'selected' : ''}>网络设备</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">机房 <span class="required">*</span></label>
+                                <select class="form-select" onchange="updateTopologyBlockRoom(${block.id}, this.value)">
+                                    <option value="">请选择机房</option>
+                                    ${roomOptions.map(room => `<option value="${room}" ${block.room === room ? 'selected' : ''}>${room}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="links-section">
+                                                    <div class="links-header">
+                            <div class="links-count">链路列表 (${block.links.length}/100)</div>
+                            <div class="links-actions">
+                                <button class="validate-links-btn" onclick="validateBlockLinks(${block.id})">
+                                    校验
+                                </button>
+                                <button class="add-link-btn" onclick="addLink(${block.id})" ${block.links.length >= 100 ? 'disabled' : ''}>
+                                    <span>+</span>
+                                    添加链路
+                                </button>
+                            </div>
+                        </div>
+                            
+                            ${block.links.length > 0 ? renderLinksTable(block) : '<p style="color: #6b7280; text-align: center; padding: 20px;">暂无链路，请点击"添加链路"按钮</p>'}
+                            
+                            ${block.links.length >= 100 ? '<div class="link-limit-warning">⚠️ 已达到链路数量上限（100条）</div>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 渲染链路卡片
+        function renderLinksTable(block) {
+            return `
+                <div class="links-container">
+                    ${block.links.map((link, index) => `
+                        <div class="link-card">
+                            <div class="link-card-header">
+                                <div class="link-card-title">链路 ${index + 1}</div>
+                                <div class="link-card-actions">
+                                                                         <button class="expand-edit-btn" onclick="openLinkEditModal(${block.id}, ${index})">编辑</button>
+                                    <button class="remove-link-btn" onclick="removeLink(${block.id}, ${index})">删除</button>
+                                </div>
+                            </div>
+                            <div class="link-card-body">
+                                <!-- 链路基础信息 -->
+                                <div class="link-info-section">
+                                    <div class="link-info-header">链路基础信息</div>
+                                    <div class="link-info-content">
+                                        <div class="link-field">
+                                            <label class="link-field-label">所属物理通道名称 <span class="required">*</span></label>
+                                            <input type="text" class="link-input" value="${link.channelName}" 
+                                                   onchange="updateLinkField(${block.id}, ${index}, 'channelName', this.value)" 
+                                                   placeholder="例如：华东-华北骨干通道">
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">应用类型 <span class="required">*</span></label>
+                                            <select class="link-select" onchange="updateLinkField(${block.id}, ${index}, 'applicationType', this.value)">
+                                                <option value="">请选择应用类型</option>
+                                                <option value="CUSTOMER" ${link.applicationType === 'CUSTOMER' ? 'selected' : ''}>下联客户</option>
+                                                <option value="ISP" ${link.applicationType === 'ISP' ? 'selected' : ''}>上联ISP</option>
+                                                <option value="REMOTE" ${link.applicationType === 'REMOTE' ? 'selected' : ''}>远程传输</option>
+                                                <option value="CABINET" ${link.applicationType === 'CABINET' ? 'selected' : ''}>柜间传输</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">链路类型 <span class="required">*</span></label>
+                                            <select class="link-select" onchange="updateLinkField(${block.id}, ${index}, 'linkType', this.value)">
+                                                <option value="">请选择链路类型</option>
+                                                <option value="FIBER" ${link.linkType === 'FIBER' ? 'selected' : ''}>裸纤</option>
+                                                <option value="LEASED" ${link.linkType === 'LEASED' ? 'selected' : ''}>专线</option>
+                                                <option value="PATCH" ${link.linkType === 'PATCH' ? 'selected' : ''}>跳纤</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">供应商</label>
+                                            <input type="text" class="link-input" value="${link.supplier}" 
+                                                   onchange="updateLinkField(${block.id}, ${index}, 'supplier', this.value)" 
+                                                   placeholder="例如：中国电信、AWS">
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">更多配置</label>
+                                            <button class="extra-config-btn" style="width: 100%;" onclick="openExtraConfigModal(${block.id}, ${index})">扩展配置</button>
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">校验结果</label>
+                                            <div class="validation-result" data-block-id="${block.id}" data-link-index="${index}">
+                                                <span class="validation-status">—</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- A端设备信息 -->
+                                <div class="link-info-section">
+                                    <div class="link-info-header">A端设备信息</div>
+                                    <div class="link-info-content">
+                                        <div class="link-field">
+                                            <label class="link-field-label">设备编码 <span class="required">*</span></label>
+                                            <input type="text" class="link-input" value="${link.aEnd.deviceCode}" 
+                                                   onchange="updateLinkEndField(${block.id}, ${index}, 'aEnd', 'deviceCode', this.value)" 
+                                                   placeholder="如：SW01-NYC-001">
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">端口号</label>
+                                            <input type="text" class="link-input" value="${link.aEnd.portNumber}" 
+                                                   onchange="updateLinkEndField(${block.id}, ${index}, 'aEnd', 'portNumber', this.value)" 
+                                                   placeholder="如：Gi1/0/1">
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">端口模块</label>
+                                            <input type="text" class="link-input" value="${link.aEnd.portModule}" 
+                                                   onchange="updateLinkEndField(${block.id}, ${index}, 'aEnd', 'portModule', this.value)" 
+                                                   placeholder="如：SFP-10G-SR">
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">是否上联PP架</label>
+                                            <select class="link-select" onchange="updateLinkEndField(${block.id}, ${index}, 'aEnd', 'isPpFrame', this.value)">
+                                                <option value="false" ${link.aEnd.isPpFrame === false ? 'selected' : ''}>否</option>
+                                                <option value="true" ${link.aEnd.isPpFrame === true ? 'selected' : ''}>是</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Z端设备信息 -->
+                                <div class="link-info-section">
+                                    <div class="link-info-header">Z端设备信息</div>
+                                    <div class="link-info-content">
+                                        <div class="link-field">
+                                            <label class="link-field-label">设备编码 <span class="required">*</span></label>
+                                            <input type="text" class="link-input" value="${link.zEnd.deviceCode}" 
+                                                   onchange="updateLinkEndField(${block.id}, ${index}, 'zEnd', 'deviceCode', this.value)" 
+                                                   placeholder="如：SW01-DC1-001">
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">端口号</label>
+                                            <input type="text" class="link-input" value="${link.zEnd.portNumber}" 
+                                                   onchange="updateLinkEndField(${block.id}, ${index}, 'zEnd', 'portNumber', this.value)" 
+                                                   placeholder="如：Gi1/0/1">
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">端口模块</label>
+                                            <input type="text" class="link-input" value="${link.zEnd.portModule}" 
+                                                   onchange="updateLinkEndField(${block.id}, ${index}, 'zEnd', 'portModule', this.value)" 
+                                                   placeholder="如：SFP-10G-SR">
+                                        </div>
+                                        
+                                        <div class="link-field">
+                                            <label class="link-field-label">是否上联PP架</label>
+                                            <select class="link-select" onchange="updateLinkEndField(${block.id}, ${index}, 'zEnd', 'isPpFrame', this.value)">
+                                                <option value="false" ${link.zEnd.isPpFrame === false ? 'selected' : ''}>否</option>
+                                                <option value="true" ${link.zEnd.isPpFrame === true ? 'selected' : ''}>是</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        // 更新拓扑统计信息
+        function updateTopologyStatistics() {
+            document.getElementById('totalTopologyBlocks').textContent = topologyBlocks.length;
+            const totalLinks = topologyBlocks.reduce((sum, block) => sum + block.links.length, 0);
+            document.getElementById('totalLinks').textContent = totalLinks;
+        }
+        
+        // 更新拓扑块操作类型
+        function updateTopologyBlockOperationType(blockId, value) {
+            const block = topologyBlocks.find(b => b.id === blockId);
+            if (block) {
+                block.operationType = value;
+            }
+        }
+        
+        // 更新拓扑块设备类型
+        function updateTopologyBlockDeviceType(blockId, value) {
+            const block = topologyBlocks.find(b => b.id === blockId);
+            if (block) {
+                block.deviceType = value;
+            }
+        }
+        
+        // 更新拓扑块机房
+        function updateTopologyBlockRoom(blockId, value) {
+            const block = topologyBlocks.find(b => b.id === blockId);
+            if (block) {
+                block.room = value;
+            }
+        }
+        
+        // 添加链路
+        function addLink(blockId) {
+            const block = topologyBlocks.find(b => b.id === blockId);
+            if (block && block.links.length < 100) {
+                                 const link = {
+                     channelName: '',
+                     applicationType: '',
+                     linkType: '',
+                     supplier: '',
+                    extraConfig: {
+                        sidCid: '',
+                        connectionCode: '',
+                        country: 'CN',
+                        city: ''
+                    },
+                                         aEnd: {
+                         deviceCode: '',
+                         portNumber: '',
+                         portModule: '',
+                         isPpFrame: false
+                     },
+                     zEnd: {
+                         deviceCode: '',
+                         portNumber: '',
+                         portModule: '',
+                         isPpFrame: false
+                     },
+                     validationStatus: 'default'
+                };
+                
+                block.links.push(link);
+                renderTopologyBlocks();
+                updateTopologyStatistics();
+            }
+        }
+        
+        // 删除链路
+        function removeLink(blockId, linkIndex) {
+            if (confirm('确定要删除这条链路吗？')) {
+                const block = topologyBlocks.find(b => b.id === blockId);
+                if (block) {
+                    block.links.splice(linkIndex, 1);
+                    renderTopologyBlocks();
+                    updateTopologyStatistics();
+                }
+            }
+        }
+        
+        // 更新链路字段
+        function updateLinkField(blockId, linkIndex, field, value) {
+            const block = topologyBlocks.find(b => b.id === blockId);
+            if (block && block.links[linkIndex]) {
+                block.links[linkIndex][field] = value;
+            }
+        }
+        
+        // 更新链路端点字段
+        function updateLinkEndField(blockId, linkIndex, endType, field, value) {
+            const block = topologyBlocks.find(b => b.id === blockId);
+            if (block && block.links[linkIndex]) {
+                if (field === 'isPpFrame') {
+                    block.links[linkIndex][endType][field] = value === 'true';
+                } else {
+                    block.links[linkIndex][endType][field] = value;
+                }
+            }
+        }
+        
+        // 打开扩展配置模态框
+        function openExtraConfigModal(blockId, linkIndex) {
+            const block = topologyBlocks.find(b => b.id === blockId);
+            if (block && block.links[linkIndex]) {
+                currentExtraConfigLink = { blockId, linkIndex };
+                const extraConfig = block.links[linkIndex].extraConfig;
+                
+                document.getElementById('sidCid').value = extraConfig.sidCid || '';
+                document.getElementById('connectionCode').value = extraConfig.connectionCode || '';
+                document.getElementById('country').value = extraConfig.country || 'CN';
+                updateCityOptions();
+                document.getElementById('city').value = extraConfig.city || '';
+                
+                document.getElementById('extraConfigModal').classList.add('show');
+            }
+        }
+        
+        // 关闭扩展配置模态框
+        function closeExtraConfigModal() {
+            document.getElementById('extraConfigModal').classList.remove('show');
+            currentExtraConfigLink = null;
+        }
+        
+        // 保存扩展配置
+        function saveExtraConfig() {
+            if (currentExtraConfigLink) {
+                const { blockId, linkIndex } = currentExtraConfigLink;
+                const block = topologyBlocks.find(b => b.id === blockId);
+                
+                if (block && block.links[linkIndex]) {
+                    block.links[linkIndex].extraConfig = {
+                        sidCid: document.getElementById('sidCid').value,
+                        connectionCode: document.getElementById('connectionCode').value,
+                        country: document.getElementById('country').value,
+                        city: document.getElementById('city').value
+                    };
+                }
+                
+                closeExtraConfigModal();
+                alert('扩展配置保存成功！');
+            }
+        }
+        
+                 // 更新城市选项
+         function updateCityOptions() {
+             const country = document.getElementById('country').value;
+             const citySelect = document.getElementById('city');
+             
+             citySelect.innerHTML = '<option value="">请选择城市</option>';
+             
+             if (cityOptions[country]) {
+                 cityOptions[country].forEach(city => {
+                     const option = document.createElement('option');
+                     option.value = city;
+                     option.textContent = city;
+                     citySelect.appendChild(option);
+                 });
+             }
+         }
+
+         // 扩展配置模态框外部点击关闭
+         document.addEventListener('click', function(e) {
+             const modal = document.getElementById('extraConfigModal');
+             if (e.target === modal) {
+                 closeExtraConfigModal();
+             }
+         });
+
+         // ===== 链路编辑弹窗功能 =====
+         
+         // 打开链路编辑弹窗
+         function openLinkEditModal(blockId, linkIndex) {
+             const block = topologyBlocks.find(b => b.id === blockId);
+             if (block && block.links[linkIndex]) {
+                 currentEditingLink = { blockId, linkIndex };
+                 const link = block.links[linkIndex];
+                 
+                 // 填充A端数据
+                 document.getElementById('editADeviceCode').value = link.aEnd.deviceCode || '';
+                 document.getElementById('editAPortNumber').value = link.aEnd.portNumber || '';
+                 document.getElementById('editAPortModule').value = link.aEnd.portModule || '';
+                 
+                 const aIsPpFrame = link.aEnd.isPpFrame ? 'true' : 'false';
+                 document.querySelector(`input[name="editAIsPpFrame"][value="${aIsPpFrame}"]`).checked = true;
+                 
+                 // 填充Z端数据
+                 document.getElementById('editZDeviceCode').value = link.zEnd.deviceCode || '';
+                 document.getElementById('editZPortNumber').value = link.zEnd.portNumber || '';
+                 document.getElementById('editZPortModule').value = link.zEnd.portModule || '';
+                 
+                 const zIsPpFrame = link.zEnd.isPpFrame ? 'true' : 'false';
+                 document.querySelector(`input[name="editZIsPpFrame"][value="${zIsPpFrame}"]`).checked = true;
+                 
+                 // 清空中继设备
+                 document.getElementById('relayDevicesContainer').innerHTML = '';
+                 relayDeviceCounter = 1;
+                 
+                 // 清空错误信息
+                 clearLinkEditErrors();
+                 
+                 // 显示弹窗
+                 document.getElementById('linkEditModal').classList.add('show');
+             }
+         }
+         
+         // 关闭链路编辑弹窗
+         function closeLinkEditModal() {
+             document.getElementById('linkEditModal').classList.remove('show');
+             currentEditingLink = null;
+         }
+         
+         // 添加中继设备
+         function addRelayDevice() {
+             const container = document.getElementById('relayDevicesContainer');
+             const relayId = relayDeviceCounter++;
+             
+             const relayHtml = `
+                 <div class="relay-device" data-relay-id="${relayId}">
+                     <div class="relay-device-header">
+                         <div class="relay-device-title">中继 ${relayId}</div>
+                         <button class="remove-relay-btn" onclick="removeRelayDevice(${relayId})">删除</button>
+                     </div>
+                     <div class="relay-device-content">
+                         <div class="relay-device-field">
+                             <label class="relay-device-label">设备类型</label>
+                             <div class="relay-radio-group">
+                                 <label class="relay-radio-option">
+                                     <input type="radio" name="relayDeviceType${relayId}" value="optical">
+                                     <span class="relay-radio-text">波分设备</span>
+                                 </label>
+                                 <label class="relay-radio-option">
+                                     <input type="radio" name="relayDeviceType${relayId}" value="third-party" checked>
+                                     <span class="relay-radio-text">第三方设备</span>
+                                 </label>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             `;
+             
+             container.insertAdjacentHTML('beforeend', relayHtml);
+         }
+         
+         // 删除中继设备
+         function removeRelayDevice(relayId) {
+             const relayElement = document.querySelector(`[data-relay-id="${relayId}"]`);
+             if (relayElement) {
+                 relayElement.remove();
+             }
+         }
+         
+         // 清空错误信息
+         function clearLinkEditErrors() {
+             const errorElements = document.querySelectorAll('#linkEditModal .field-error');
+             errorElements.forEach(element => {
+                 element.textContent = '';
+             });
+         }
+         
+         // 验证链路编辑表单
+         function validateLinkEdit() {
+             clearLinkEditErrors();
+             let isValid = true;
+             
+             // 验证A端设备编码
+             const aDeviceCode = document.getElementById('editADeviceCode').value.trim();
+             if (!aDeviceCode) {
+                 document.getElementById('editADeviceCodeError').textContent = '请输入A端设备编码';
+                 isValid = false;
+             }
+             
+             // 验证Z端设备编码
+             const zDeviceCode = document.getElementById('editZDeviceCode').value.trim();
+             if (!zDeviceCode) {
+                 document.getElementById('editZDeviceCodeError').textContent = '请输入Z端设备编码';
+                 isValid = false;
+             }
+             
+             return isValid;
+         }
+         
+         // 保存链路编辑
+         function saveLinkEdit() {
+             if (!validateLinkEdit()) {
+                 return;
+             }
+             
+             if (currentEditingLink) {
+                 const { blockId, linkIndex } = currentEditingLink;
+                 const block = topologyBlocks.find(b => b.id === blockId);
+                 
+                 if (block && block.links[linkIndex]) {
+                     // 更新A端数据
+                     block.links[linkIndex].aEnd.deviceCode = document.getElementById('editADeviceCode').value.trim();
+                     block.links[linkIndex].aEnd.portNumber = document.getElementById('editAPortNumber').value.trim();
+                     block.links[linkIndex].aEnd.portModule = document.getElementById('editAPortModule').value.trim();
+                     block.links[linkIndex].aEnd.isPpFrame = document.querySelector('input[name="editAIsPpFrame"]:checked').value === 'true';
+                     
+                     // 更新Z端数据
+                     block.links[linkIndex].zEnd.deviceCode = document.getElementById('editZDeviceCode').value.trim();
+                     block.links[linkIndex].zEnd.portNumber = document.getElementById('editZPortNumber').value.trim();
+                     block.links[linkIndex].zEnd.portModule = document.getElementById('editZPortModule').value.trim();
+                     block.links[linkIndex].zEnd.isPpFrame = document.querySelector('input[name="editZIsPpFrame"]:checked').value === 'true';
+                     
+                     // 收集中继设备数据
+                     const relayDevices = [];
+                     const relayElements = document.querySelectorAll('.relay-device');
+                     relayElements.forEach(element => {
+                         const relayId = element.getAttribute('data-relay-id');
+                         const deviceType = document.querySelector(`input[name="relayDeviceType${relayId}"]:checked`).value;
+                         relayDevices.push({
+                             id: relayId,
+                             deviceType: deviceType
+                         });
+                     });
+                     
+                     // 保存中继设备数据
+                     block.links[linkIndex].relayDevices = relayDevices;
+                     
+                     // 重新渲染
+                     renderTopologyBlocks();
+                     
+                     // 关闭弹窗
+                     closeLinkEditModal();
+                     
+                     alert('链路信息保存成功！');
+                 }
+             }
+         }
+         
+         // 监听链路编辑弹窗外部点击（不关闭弹窗，按要求需要点击取消或X按钮）
+         document.getElementById('linkEditModal').addEventListener('click', function(e) {
+             // 点击遮罩不关闭弹窗，按照要求
+         });
+
+         // ===== 链路校验功能 =====
+         
+         // 校验操作块中的所有链路
+         function validateBlockLinks(blockId) {
+             const block = topologyBlocks.find(b => b.id === blockId);
+             if (!block || block.links.length === 0) {
+                 alert('该操作块暂无链路，无法进行校验');
+                 return;
+             }
+             
+             // 禁用校验按钮，防止重复点击
+             const validateBtn = document.querySelector(`button[onclick="validateBlockLinks(${blockId})"]`);
+             if (validateBtn) {
+                 validateBtn.disabled = true;
+                 validateBtn.innerHTML = '校验中...';
+             }
+             
+             // 设置所有链路为loading状态
+             block.links.forEach((link, index) => {
+                 setLinkValidationStatus(blockId, index, 'loading');
+             });
+             
+             // 模拟校验过程，2秒后返回结果
+             setTimeout(() => {
+                 block.links.forEach((link, index) => {
+                     // 随机生成校验结果，70%成功率
+                     const isSuccess = Math.random() > 0.3;
+                     setLinkValidationStatus(blockId, index, isSuccess ? 'success' : 'error');
+                 });
+                 
+                 // 恢复校验按钮
+                 if (validateBtn) {
+                     validateBtn.disabled = false;
+                     validateBtn.innerHTML = '校验';
+                 }
+             }, 2000);
+         }
+         
+         // 设置链路校验状态
+         function setLinkValidationStatus(blockId, linkIndex, status) {
+             const validationElement = document.querySelector(`[data-block-id="${blockId}"][data-link-index="${linkIndex}"] .validation-status`);
+             if (!validationElement) return;
+             
+             // 清除之前的状态类
+             validationElement.classList.remove('loading', 'success', 'error');
+             
+             switch (status) {
+                 case 'loading':
+                     validationElement.classList.add('loading');
+                     validationElement.innerHTML = '<div class="loading-spinner"></div>校验中';
+                     break;
+                 case 'success':
+                     validationElement.classList.add('success');
+                     validationElement.innerHTML = '<span class="validation-icon">✓</span>校验成功';
+                     break;
+                 case 'error':
+                     validationElement.classList.add('error');
+                     validationElement.innerHTML = '<span class="validation-icon">✗</span>校验失败';
+                     break;
+                 default:
+                     validationElement.innerHTML = '—';
+             }
+         }
+         
+         // 重置链路校验状态
+         function resetLinkValidationStatus(blockId, linkIndex) {
+             setLinkValidationStatus(blockId, linkIndex, 'default');
+         }
+
+                 // 点击模态框外部关闭
+         document.getElementById('batchModal').addEventListener('click', function(e) {
+             if (e.target === this) {
+                 closeBatchModal();
+             }
+         });
+
+         // ===== 设备调度管理功能 =====
+         
+         // 添加操作类型块
+         function addOperationBlock() {
+             const block = {
+                 id: blockCounter++,
+                 operationType: '',
+                 deviceType: '',
+                 room: '',
+                 devices: []
+             };
+             
+             operationBlocks.push(block);
+             renderOperationBlocks();
+             updateBlocksStatistics();
+         }
+         
+         // 删除操作类型块
+         function removeOperationBlock(blockId) {
+             if (confirm('确定要删除这个操作类型块吗？将同时删除其中的所有设备信息。')) {
+                 operationBlocks = operationBlocks.filter(block => block.id !== blockId);
+                 renderOperationBlocks();
+                 updateBlocksStatistics();
+             }
+         }
+         
+         // 渲染操作类型块
+         function renderOperationBlocks() {
+             const container = document.getElementById('operationBlocksContainer');
+             
+             if (operationBlocks.length === 0) {
+                 container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">暂无操作类型块，请点击上方按钮添加</p>';
+                 return;
+             }
+             
+             container.innerHTML = operationBlocks.map(block => `
+                 <div class="operation-block" data-block-id="${block.id}">
+                     <div class="operation-block-header">
+                         <div class="block-title">操作类型块 ${block.id}</div>
+                         <div class="block-actions">
+                             <button class="btn btn-outline btn-sm" onclick="validateOperationBlock(${block.id})">校验</button>
+                             <button class="btn btn-danger btn-sm" onclick="removeOperationBlock(${block.id})">删除</button>
+                         </div>
+                     </div>
+                     <div class="operation-block-content">
+                         <div class="block-basic-info">
+                             <div class="form-group">
+                                 <label class="form-label">操作类型 <span class="required">*</span></label>
+                                 <select class="form-select" onchange="updateBlockOperationType(${block.id}, this.value)">
+                                     <option value="">请选择操作类型</option>
+                                     <option value="UP" ${block.operationType === 'UP' ? 'selected' : ''}>上架</option>
+                                     <option value="DOWN" ${block.operationType === 'DOWN' ? 'selected' : ''}>下架</option>
+                                 </select>
+                             </div>
+                             
+                             <div class="form-group">
+                                 <label class="form-label">设备类型 <span class="required">*</span></label>
+                                 <select class="form-select" onchange="updateBlockDeviceType(${block.id}, this.value)">
+                                     <option value="">请选择设备类型</option>
+                                     <option value="server" ${block.deviceType === 'server' ? 'selected' : ''}>服务器</option>
+                                     <option value="network" ${block.deviceType === 'network' ? 'selected' : ''}>网络设备</option>
+                                 </select>
+                             </div>
+                             
+                             <div class="form-group">
+                                 <label class="form-label">机房 <span class="required">*</span></label>
+                                 <select class="form-select" onchange="updateBlockRoom(${block.id}, this.value)">
+                                     <option value="">请选择机房</option>
+                                     ${roomOptions.map(room => `<option value="${room}" ${block.room === room ? 'selected' : ''}>${room}</option>`).join('')}
+                                 </select>
+                             </div>
+                         </div>
+                         
+                         <div class="devices-section">
+                             <div class="devices-header">
+                                 <div class="devices-count">设备列表 (${block.devices.length}/50)</div>
+                                 <button class="add-device-btn" onclick="addDevice(${block.id})" ${block.devices.length >= 50 ? 'disabled' : ''}>
+                                     <span>+</span>
+                                     添加设备
+                                 </button>
+                             </div>
+                             
+                             ${block.devices.length > 0 ? renderDevicesTable(block) : '<p style="color: #6b7280; text-align: center; padding: 20px;">暂无设备，请点击"添加设备"按钮</p>'}
+                             
+                             ${block.devices.length >= 50 ? '<div class="device-limit-warning">⚠️ 已达到设备数量上限（50台）</div>' : ''}
+                         </div>
+                     </div>
+                 </div>
+             `).join('');
+         }
+         
+         // 渲染设备表格
+         function renderDevicesTable(block) {
+             return `
+                 <div class="devices-table">
+                     <table>
+                                                   <thead>
+                              <tr>
+                                  <th>资产编号</th>
+                                  <th>SN码</th>
+                                  <th>型号名称</th>
+                                  <th>机柜</th>
+                                  <th>U位位置</th>
+                                  <th>使用公司</th>
+                                  <th>内网IP</th>
+                                  <th>公网IP</th>
+                                  <th>SNMP团体名</th>
+                                  <th>校验结果</th>
+                                  <th>操作</th>
+                              </tr>
+                          </thead>
+                         <tbody>
+                             ${block.devices.map((device, index) => `
+                                 <tr>
+                                     <td>
+                                         <input type="text" class="device-input" value="${device.assetId}" 
+                                                onchange="updateDeviceField(${block.id}, ${index}, 'assetId', this.value)"
+                                                onblur="autoFillDeviceInfo(${block.id}, ${index}, this.value)"
+                                                placeholder="输入资产编号">
+                                     </td>
+                                     <td>
+                                         <input type="text" class="device-input auto-filled" value="${device.sn}" readonly 
+                                                title="通过资产编号自动填充">
+                                     </td>
+                                     <td>
+                                         <input type="text" class="device-input auto-filled" value="${device.model}" readonly 
+                                                title="通过资产编号自动填充">
+                                     </td>
+                                     <td>
+                                         <select class="device-select" onchange="updateDeviceField(${block.id}, ${index}, 'cabinet', this.value)">
+                                             <option value="">选择机柜</option>
+                                             ${cabinetOptions.map(cab => `<option value="${cab}" ${device.cabinet === cab ? 'selected' : ''}>${cab}</option>`).join('')}
+                                         </select>
+                                     </td>
+                                     <td>
+                                         <div class="u-position-group">
+                                             <select class="device-select" onchange="updateDeviceField(${block.id}, ${index}, 'startU', this.value); autoFillEndU(${block.id}, ${index})">
+                                                 <option value="">起始U</option>
+                                                 ${Array.from({length: 42}, (_, i) => i + 1).map(u => `<option value="${u}" ${device.startU === u ? 'selected' : ''}>U${u}</option>`).join('')}
+                                             </select>
+                                             <span>-</span>
+                                             <select class="device-select" onchange="updateDeviceField(${block.id}, ${index}, 'endU', this.value)">
+                                                 <option value="">结束U</option>
+                                                 ${Array.from({length: 42}, (_, i) => i + 1).map(u => `<option value="${u}" ${device.endU === u ? 'selected' : ''}>U${u}</option>`).join('')}
+                                             </select>
+                                         </div>
+                                     </td>
+                                     <td>
+                                         <select class="device-select" onchange="updateDeviceField(${block.id}, ${index}, 'ownerCompany', this.value)">
+                                             <option value="">选择公司</option>
+                                             ${companyOptions.map(company => `<option value="${company}" ${device.ownerCompany === company ? 'selected' : ''}>${company}</option>`).join('')}
+                                         </select>
+                                     </td>
+                                     <td>
+                                         <input type="text" class="device-input" value="${device.privateIp}" 
+                                                onchange="updateDeviceField(${block.id}, ${index}, 'privateIp', this.value)"
+                                                onblur="validateIPAddress(this)"
+                                                placeholder="192.168.1.1">
+                                     </td>
+                                     <td>
+                                         <input type="text" class="device-input" value="${device.publicIp}" 
+                                                onchange="updateDeviceField(${block.id}, ${index}, 'publicIp', this.value)"
+                                                onblur="validateIPAddress(this)"
+                                                placeholder="1.2.3.4">
+                                     </td>
+                                                                           <td>
+                                          <input type="text" class="device-input" value="${device.snmpCommunity}" 
+                                                 onchange="updateDeviceField(${block.id}, ${index}, 'snmpCommunity', this.value)"
+                                                 placeholder="public@123">
+                                      </td>
+                                      <td style="text-align: center;">
+                                          <span class="validation-status" data-block-id="${block.id}" data-device-index="${index}">—</span>
+                                      </td>
+                                      <td>
+                                          <button class="remove-device-btn" onclick="removeDevice(${block.id}, ${index})">删除</button>
+                                      </td>
+                                 </tr>
+                             `).join('')}
+                         </tbody>
+                     </table>
+                 </div>
+             `;
+         }
+         
+         // 更新操作类型块字段
+         function updateBlockOperationType(blockId, value) {
+             const block = operationBlocks.find(b => b.id === blockId);
+             if (block) {
+                 block.operationType = value;
+             }
+         }
+         
+         function updateBlockDeviceType(blockId, value) {
+             const block = operationBlocks.find(b => b.id === blockId);
+             if (block) {
+                 block.deviceType = value;
+             }
+         }
+         
+         function updateBlockRoom(blockId, value) {
+             const block = operationBlocks.find(b => b.id === blockId);
+             if (block) {
+                 block.room = value;
+             }
+         }
+         
+         // 设备管理
+         function addDevice(blockId) {
+             const block = operationBlocks.find(b => b.id === blockId);
+             if (block && block.devices.length < 50) {
+                 const device = {
+                     assetId: '',
+                     sn: '',
+                     model: '',
+                     cabinet: '',
+                     startU: '',
+                     endU: '',
+                     ownerCompany: '',
+                     privateIp: '',
+                     publicIp: '',
+                     snmpCommunity: '',
+                     validationStatus: 'pending'
+                 };
+                 
+                 block.devices.push(device);
+                 renderOperationBlocks();
+                 updateBlocksStatistics();
+             }
+         }
+         
+         function removeDevice(blockId, deviceIndex) {
+             const block = operationBlocks.find(b => b.id === blockId);
+             if (block && confirm('确定要删除这台设备吗？')) {
+                 block.devices.splice(deviceIndex, 1);
+                 renderOperationBlocks();
+                 updateBlocksStatistics();
+             }
+         }
+         
+         function updateDeviceField(blockId, deviceIndex, field, value) {
+             const block = operationBlocks.find(b => b.id === blockId);
+             if (block && block.devices[deviceIndex]) {
+                 block.devices[deviceIndex][field] = value;
+             }
+         }
+         
+         // 自动填充设备信息
+         function autoFillDeviceInfo(blockId, deviceIndex, assetId) {
+             const block = operationBlocks.find(b => b.id === blockId);
+             if (block && block.devices[deviceIndex]) {
+                 const device = block.devices[deviceIndex];
+                 
+                 // 清空之前的自动填充数据
+                 device.sn = '';
+                 device.model = '';
+                 
+                 if (assetId && assetId.trim()) {
+                     // 支持大小写不敏感的匹配
+                     const normalizedAssetId = assetId.trim().toUpperCase();
+                     const mockData = mockAssetData[normalizedAssetId];
+                     
+                     if (mockData) {
+                         // 找到匹配数据，自动填充
+                         device.sn = mockData.sn;
+                         device.model = mockData.model;
+                         
+                         // 显示成功提示（可选）
+                         console.log(`资产编号 ${assetId} 自动填充完成: SN=${mockData.sn}, 型号=${mockData.model}`);
+                     } else {
+                         // 未找到匹配数据，给出提示
+                         console.log(`未找到资产编号 ${assetId} 对应的设备信息，请手动填写SN码和型号`);
+                     }
+                 }
+                 
+                 // 重新渲染设备表格
+                 renderOperationBlocks();
+             }
+         }
+         
+         // 自动填充结束U位
+         function autoFillEndU(blockId, deviceIndex) {
+             const block = operationBlocks.find(b => b.id === blockId);
+             if (block && block.devices[deviceIndex]) {
+                 const device = block.devices[deviceIndex];
+                 if (device.startU && !device.endU) {
+                     device.endU = device.startU;
+                     renderOperationBlocks();
+                 }
+             }
+         }
+         
+         // 校验操作类型块
+         function validateOperationBlock(blockId) {
+             const block = operationBlocks.find(b => b.id === blockId);
+             if (block) {
+                 // 将所有设备的校验状态设为loading
+                 block.devices.forEach((device, index) => {
+                     const statusElement = document.querySelector(`[data-block-id="${blockId}"][data-device-index="${index}"]`);
+                     if (statusElement) {
+                         statusElement.innerHTML = '⏳';
+                         statusElement.title = '校验中...';
+                     }
+                 });
+                 
+                 // 模拟校验过程
+                 setTimeout(() => {
+                     block.devices.forEach((device, index) => {
+                         // 随机生成校验结果
+                         const isValid = Math.random() > 0.3; // 70%成功率
+                         const statusElement = document.querySelector(`[data-block-id="${blockId}"][data-device-index="${index}"]`);
+                         if (statusElement) {
+                             statusElement.innerHTML = isValid ? '✓' : '✗';
+                             statusElement.title = isValid ? '校验成功' : '校验失败';
+                             statusElement.style.color = isValid ? '#10b981' : '#ef4444';
+                         }
+                         device.validationStatus = isValid ? 'success' : 'failed';
+                     });
+                 }, 2000); // 2秒后完成校验
+             }
+         }
+         
+         // 更新统计信息
+         function updateBlocksStatistics() {
+             const totalBlocks = operationBlocks.length;
+             const totalDevices = operationBlocks.reduce((sum, block) => sum + block.devices.length, 0);
+             
+             document.getElementById('totalBlocks').textContent = totalBlocks;
+             document.getElementById('totalDevices').textContent = totalDevices;
+         }
+         
+         // IP地址验证
+         function isValidIP(ip) {
+             // IPv4验证
+             const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+             // IPv6验证（简化版）
+             const ipv6Regex = /^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
+             
+             return ipv4Regex.test(ip) || ipv6Regex.test(ip);
+         }
+         
+         function validateIPAddress(input) {
+             const ip = input.value.trim();
+             if (ip && !isValidIP(ip)) {
+                 input.classList.add('validation-error');
+                 // 添加错误提示
+                 let errorMsg = input.nextElementSibling;
+                 if (!errorMsg || !errorMsg.classList.contains('validation-message')) {
+                     errorMsg = document.createElement('div');
+                     errorMsg.className = 'validation-message';
+                     input.parentNode.appendChild(errorMsg);
+                 }
+                 errorMsg.textContent = '请输入正确的IP地址格式';
+             } else {
+                 input.classList.remove('validation-error');
+                 // 移除错误提示
+                 const errorMsg = input.nextElementSibling;
+                 if (errorMsg && errorMsg.classList.contains('validation-message')) {
+                     errorMsg.remove();
+                 }
+             }
+         }
+    </script>
+</body>
+</html> 
