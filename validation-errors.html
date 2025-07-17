@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校验结果 - DCIM运维系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        /* 顶部导航栏 */
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0 20px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .navbar .logo {
+            font-size: 18px;
+            font-weight: 600;
+            margin-right: 40px;
+        }
+
+        .navbar .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .navbar .nav-item {
+            margin-right: 30px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .nav-item.active,
+        .navbar .nav-item:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* 操作栏 */
+        .action-bar {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .task-info span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        /* 分页标签 */
+        .tab-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .tab-nav {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .tab-item {
+            padding: 16px 24px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .tab-item.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+
+        .tab-item:hover:not(.active) {
+            background-color: #f9fafb;
+        }
+
+        .error-count {
+            background: #ef4444;
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+        }
+
+        /* 分页内容 */
+        .tab-content {
+            padding: 20px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* 操作类型块 */
+        .operation-block {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .block-header {
+            background: #f8fafc;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .block-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .block-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.type-上架 {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.type-下架 {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+
+        .status-badge.type-新增 {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.type-退订 {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        /* 数据表格 */
+        .data-table {
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #f8fafc;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+
+        .table td {
+            padding: 8px;
+            border-bottom: 1px solid #f3f4f6;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .table-input {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        .table-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+        }
+
+        .table-input:read-only {
+            background-color: #f9fafb;
+            color: #6b7280;
+        }
+
+        .validation-result {
+            color: #ef4444;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .validation-result.success {
+            color: #10b981;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        /* 校验进度弹窗 */
+        .validation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .validation-modal.show {
+            display: flex;
+        }
+
+        .validation-modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 32px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .validation-status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .loading-icon {
+            font-size: 48px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            animation: progress 3s ease-in-out;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .success-icon {
+            font-size: 48px;
+            color: #10b981;
+        }
+
+        .success-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .success-message {
+            font-size: 14px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="logo">DCIM运维系统</div>
+        <ul class="nav-menu">
+            <li class="nav-item">资源管理</li>
+            <li class="nav-item active">物理资源调度中心</li>
+            <li class="nav-item">设备监控</li>
+            <li class="nav-item">运维报告</li>
+            <li class="nav-item">系统设置</li>
+        </ul>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">校验结果</h1>
+            <p class="page-subtitle">查看和处理校验失败的数据，修正错误后可进行二次校验</p>
+        </div>
+
+        <!-- 操作栏 -->
+        <div class="action-bar">
+            <div class="task-info" id="taskInfo">
+                <!-- 任务信息将通过JavaScript动态加载 -->
+            </div>
+            
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-warning" onclick="revalidateAll()">
+                    🔄 二次校验
+                </button>
+                <button class="btn btn-success" onclick="saveChanges()">
+                    💾 确认保存
+                </button>
+                <button class="btn btn-outline" onclick="window.close()">
+                    ← 返回
+                </button>
+            </div>
+        </div>
+
+        <!-- 分页标签 -->
+        <div class="tab-container">
+            <div class="tab-nav">
+                <div class="tab-item active" onclick="switchTab('device')">
+                    设备校验失败
+                    <span class="error-count" id="deviceErrorCount">0</span>
+                </div>
+                <div class="tab-item" onclick="switchTab('link')">
+                    链路校验失败
+                    <span class="error-count" id="linkErrorCount">0</span>
+                </div>
+            </div>
+
+            <div class="tab-content">
+                <!-- 设备校验失败分页 -->
+                <div id="deviceTab" class="tab-pane active">
+                    <div id="deviceErrorBlocks">
+                        <!-- 设备错误数据将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+
+                <!-- 链路校验失败分页 -->
+                <div id="linkTab" class="tab-pane">
+                    <div id="linkErrorBlocks">
+                        <!-- 链路错误数据将通过JavaScript动态加载 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let validationData = null;
+        let currentTab = 'device';
+
+        // 页面加载时初始化数据
+        document.addEventListener('DOMContentLoaded', function() {
+            loadValidationData();
+        });
+
+        // 加载校验数据
+        function loadValidationData() {
+            const data = localStorage.getItem('validationErrors');
+            if (data) {
+                validationData = JSON.parse(data);
+                renderTaskInfo();
+                renderDeviceErrors();
+                renderLinkErrors();
+                updateErrorCounts();
+            } else {
+                alert('未找到校验数据');
+                window.close();
+            }
+        }
+
+        // 渲染任务信息
+        function renderTaskInfo() {
+            const taskInfo = document.getElementById('taskInfo');
+            if (validationData.taskInfo) {
+                const task = validationData.taskInfo;
+                taskInfo.innerHTML = `
+                    <span>📋 任务ID: ${task.taskId || task.id}</span>
+                    <span>📝 业务标题: ${task.name}</span>
+                    <span>🏷️ 业务类型: ${task.operationType}</span>
+                    <span>⏰ 执行时间: ${task.timeRange || task.time}</span>
+                `;
+            }
+        }
+
+        // 渲染设备错误数据
+        function renderDeviceErrors() {
+            const container = document.getElementById('deviceErrorBlocks');
+            if (!validationData.deviceErrors || validationData.deviceErrors.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">暂无设备校验错误</p>';
+                return;
+            }
+
+            container.innerHTML = validationData.deviceErrors.map(block => `
+                <div class="operation-block">
+                    <div class="block-header">
+                        <div class="block-title">操作类型块 ${block.id}</div>
+                        <div class="block-info">
+                            <span class="status-badge type-${block.operationType}">${block.operationType}</span>
+                            <span>设备类型: ${block.deviceType}</span>
+                            <span>机房: ${block.room}</span>
+                            <span>错误设备: ${block.devices.length} 台</span>
+                        </div>
+                    </div>
+                    <div class="data-table">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th width="10%">资产编号</th>
+                                    <th width="10%">SN码</th>
+                                    <th width="10%">型号名称</th>
+                                    <th width="8%">机柜</th>
+                                    <th width="8%">U位位置</th>
+                                    <th width="8%">使用公司</th>
+                                    <th width="10%">内网IP</th>
+                                    <th width="10%">公网IP</th>
+                                    <th width="8%">SNMP IP</th>
+                                    <th width="8%">SNMP版本</th>
+                                    <th width="8%">SNMP团体名</th>
+                                    <th width="6%">SNMP端口</th>
+                                    <th width="10%">校验结果</th>
+                                    <th width="6%">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${block.devices.map((device, index) => `
+                                    <tr id="device-${block.id}-${index}">
+                                        <td><input type="text" class="table-input" value="${device.assetNumber}" readonly></td>
+                                        <td><input type="text" class="table-input" value="${device.snCode}" readonly></td>
+                                        <td><input type="text" class="table-input" value="${device.modelName}" readonly></td>
+                                        <td><input type="text" class="table-input" value="${device.rack}" readonly></td>
+                                        <td><input type="text" class="table-input" value="${device.uPosition}" readonly></td>
+                                        <td><input type="text" class="table-input" value="${device.company}" readonly></td>
+                                        <td><input type="text" class="table-input" value="${device.internalIp}" 
+                                                   onchange="updateDeviceField(${block.id}, ${index}, 'internalIp', this.value)"></td>
+                                        <td><input type="text" class="table-input" value="${device.publicIp}" 
+                                                   onchange="updateDeviceField(${block.id}, ${index}, 'publicIp', this.value)"></td>
+                                        <td><input type="text" class="table-input" value="${device.snmpIp}" 
+                                                   onchange="updateDeviceField(${block.id}, ${index}, 'snmpIp', this.value)"></td>
+                                        <td><input type="text" class="table-input" value="${device.snmpVersion}" 
+                                                   onchange="updateDeviceField(${block.id}, ${index}, 'snmpVersion', this.value)"></td>
+                                        <td><input type="text" class="table-input" value="${device.snmpCommunity}" 
+                                                   onchange="updateDeviceField(${block.id}, ${index}, 'snmpCommunity', this.value)"></td>
+                                        <td><input type="text" class="table-input" value="${device.snmpPort}" 
+                                                   onchange="updateDeviceField(${block.id}, ${index}, 'snmpPort', this.value)"></td>
+                                        <td><span class="validation-result" id="device-result-${block.id}-${index}">${device.validationResult}</span></td>
+                                        <td><button class="delete-btn" onclick="removeDevice(${block.id}, ${index})">删除</button></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染链路错误数据
+        function renderLinkErrors() {
+            const container = document.getElementById('linkErrorBlocks');
+            if (!validationData.linkErrors || validationData.linkErrors.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 40px;">暂无链路校验错误</p>';
+                return;
+            }
+
+            container.innerHTML = validationData.linkErrors.map(block => `
+                <div class="operation-block">
+                    <div class="block-header">
+                        <div class="block-title">操作类型块 ${block.id}</div>
+                        <div class="block-info">
+                            <span class="status-badge type-${block.operationType}">${block.operationType}</span>
+                            <span>设备类型: ${block.deviceType}</span>
+                            <span>机房: ${block.room}</span>
+                            <span>错误链路: ${block.links.length} 条</span>
+                        </div>
+                    </div>
+                    <div class="data-table">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th width="15%">所属物理通道</th>
+                                    <th width="10%">应用类型</th>
+                                    <th width="10%">链路类型</th>
+                                    <th width="12%">A端设备编码</th>
+                                    <th width="12%">A端端口号</th>
+                                    <th width="12%">Z端设备编码</th>
+                                    <th width="12%">Z端端口号</th>
+                                    <th width="10%">校验结果</th>
+                                    <th width="7%">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${block.links.map((link, index) => `
+                                    <tr id="link-${block.id}-${index}">
+                                        <td><input type="text" class="table-input" value="${link.physicalChannel}" readonly></td>
+                                        <td><input type="text" class="table-input" value="${link.applicationType}" readonly></td>
+                                        <td><input type="text" class="table-input" value="${link.linkType}" readonly></td>
+                                        <td><input type="text" class="table-input" value="${link.aDeviceCode}" 
+                                                   onchange="updateLinkField(${block.id}, ${index}, 'aDeviceCode', this.value)"></td>
+                                        <td><input type="text" class="table-input" value="${link.aPortNumber}" 
+                                                   onchange="updateLinkField(${block.id}, ${index}, 'aPortNumber', this.value)"></td>
+                                        <td><input type="text" class="table-input" value="${link.zDeviceCode}" 
+                                                   onchange="updateLinkField(${block.id}, ${index}, 'zDeviceCode', this.value)"></td>
+                                        <td><input type="text" class="table-input" value="${link.zPortNumber}" 
+                                                   onchange="updateLinkField(${block.id}, ${index}, 'zPortNumber', this.value)"></td>
+                                        <td><span class="validation-result" id="link-result-${block.id}-${index}">${link.validationResult}</span></td>
+                                        <td><button class="delete-btn" onclick="removeLink(${block.id}, ${index})">删除</button></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 更新错误计数
+        function updateErrorCounts() {
+            const deviceCount = validationData.deviceErrors ? 
+                validationData.deviceErrors.reduce((sum, block) => sum + block.devices.length, 0) : 0;
+            const linkCount = validationData.linkErrors ? 
+                validationData.linkErrors.reduce((sum, block) => sum + block.links.length, 0) : 0;
+            
+            document.getElementById('deviceErrorCount').textContent = deviceCount;
+            document.getElementById('linkErrorCount').textContent = linkCount;
+        }
+
+        // 切换分页
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // 更新分页样式
+            document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            
+            if (tab === 'device') {
+                document.querySelector('.tab-item:first-child').classList.add('active');
+                document.getElementById('deviceTab').classList.add('active');
+            } else {
+                document.querySelector('.tab-item:last-child').classList.add('active');
+                document.getElementById('linkTab').classList.add('active');
+            }
+        }
+
+        // 更新设备字段
+        function updateDeviceField(blockId, deviceIndex, field, value) {
+            const block = validationData.deviceErrors.find(b => b.id === blockId);
+            if (block && block.devices[deviceIndex]) {
+                block.devices[deviceIndex][field] = value;
+            }
+        }
+
+        // 更新链路字段
+        function updateLinkField(blockId, linkIndex, field, value) {
+            const block = validationData.linkErrors.find(b => b.id === blockId);
+            if (block && block.links[linkIndex]) {
+                block.links[linkIndex][field] = value;
+            }
+        }
+
+        // 删除设备
+        function removeDevice(blockId, deviceIndex) {
+            if (confirm('确定要删除这个设备吗？')) {
+                const block = validationData.deviceErrors.find(b => b.id === blockId);
+                if (block) {
+                    block.devices.splice(deviceIndex, 1);
+                    renderDeviceErrors();
+                    updateErrorCounts();
+                }
+            }
+        }
+
+        // 删除链路
+        function removeLink(blockId, linkIndex) {
+            if (confirm('确定要删除这个链路吗？')) {
+                const block = validationData.linkErrors.find(b => b.id === blockId);
+                if (block) {
+                    block.links.splice(linkIndex, 1);
+                    renderLinkErrors();
+                    updateErrorCounts();
+                }
+            }
+        }
+
+        // 二次校验
+        function revalidateAll() {
+            // 显示校验弹窗
+            showValidationModal();
+            
+            // 模拟校验过程（3秒延迟）
+            setTimeout(() => {
+                performRevalidation();
+                hideValidationModal();
+                alert('二次校验完成！页面已更新最新校验结果。');
+            }, 3000);
+        }
+
+        // 执行二次校验
+        function performRevalidation() {
+            // 设备校验：随机标记一些为成功
+            validationData.deviceErrors.forEach(block => {
+                block.devices.forEach((device, index) => {
+                    if (Math.random() > 0.4) { // 60%概率校验成功
+                        device.validationResult = '✓ 校验通过';
+                        const resultElement = document.getElementById(`device-result-${block.id}-${index}`);
+                        if (resultElement) {
+                            resultElement.textContent = '✓ 校验通过';
+                            resultElement.classList.add('success');
+                        }
+                    }
+                });
+            });
+
+            // 链路校验：随机标记一些为成功
+            validationData.linkErrors.forEach(block => {
+                block.links.forEach((link, index) => {
+                    if (Math.random() > 0.3) { // 70%概率校验成功
+                        link.validationResult = '✓ 校验通过';
+                        const resultElement = document.getElementById(`link-result-${block.id}-${index}`);
+                        if (resultElement) {
+                            resultElement.textContent = '✓ 校验通过';
+                            resultElement.classList.add('success');
+                        }
+                    }
+                });
+            });
+        }
+
+        // 显示校验弹窗
+        function showValidationModal() {
+            const modal = document.createElement('div');
+            modal.id = 'validationModal';
+            modal.className = 'validation-modal';
+            modal.innerHTML = `
+                <div class="validation-modal-content">
+                    <div class="validation-status" id="validationStatus">
+                        <div class="loading-icon">⏳</div>
+                        <div class="loading-text">二次校验中，请稍候...</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.classList.add('show');
+        }
+
+        // 隐藏校验弹窗
+        function hideValidationModal() {
+            const modal = document.getElementById('validationModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 保存更改
+        function saveChanges() {
+            if (confirm('确定要保存当前的修改吗？这将更新数据库中的数据。')) {
+                // 这里应该调用后端API保存数据
+                // 模拟保存过程
+                setTimeout(() => {
+                    alert('数据保存成功！');
+                    // 清除本地存储的错误数据
+                    localStorage.removeItem('validationErrors');
+                    // 关闭窗口
+                    window.close();
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html> 

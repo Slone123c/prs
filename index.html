@@ -183,6 +183,9 @@
             font-weight: 600;
             color: #374151;
             border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
 
         .table td {
@@ -228,6 +231,39 @@
         .btn-sm {
             padding: 4px 8px;
             font-size: 12px;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .pagination-btn:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .pagination-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
         }
 
         /* 模态框 */
@@ -326,6 +362,37 @@
             justify-content: end;
             gap: 12px;
         }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 16px;
+            }
+            
+            .action-bar {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+            
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+            
+            .table {
+                font-size: 12px;
+            }
+            
+            .table th,
+            .table td {
+                padding: 8px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -351,7 +418,7 @@
 
         <!-- 操作栏 -->
         <div class="action-bar">
-            <button class="btn btn-primary" onclick="window.location.href='add-task.html'">
+            <button class="btn btn-primary" onclick="openModal('add')">
                 <span>+</span>
                 新增调度任务
             </button>
@@ -386,6 +453,15 @@
                     <!-- 数据将通过JavaScript动态加载 -->
                 </tbody>
             </table>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination">
+            <button class="pagination-btn" onclick="changePage(-1)">上一页</button>
+            <button class="pagination-btn active">1</button>
+            <button class="pagination-btn">2</button>
+            <button class="pagination-btn">3</button>
+            <button class="pagination-btn" onclick="changePage(1)">下一页</button>
         </div>
     </div>
 
@@ -555,7 +631,7 @@
             document.querySelector(`input[name="operationType"][value="${task.operationType}"]`).checked = true;
             document.getElementById('taskDescription').value = task.description;
             
-            // 转换时间格式
+            // 转换时间格式为datetime-local所需格式
             const date = new Date(task.time.replace(' ', 'T'));
             const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
             document.getElementById('taskTime').value = localDate.toISOString().slice(0, 16);
@@ -569,11 +645,13 @@
             const description = document.getElementById('taskDescription').value;
             const time = document.getElementById('taskTime').value;
 
+            // 验证必填字段
             if (!id || !name || !operationType || !description || !time) {
                 alert('请填写所有必填字段');
                 return;
             }
 
+            // 格式化时间显示
             const formattedTime = new Date(time).toLocaleString('zh-CN', {
                 year: 'numeric',
                 month: '2-digit',
@@ -591,14 +669,19 @@
             };
 
             if (currentEditingIndex === -1) {
+                // 新增任务
                 tasks.unshift(taskData);
             } else {
+                // 编辑任务
                 tasks[currentEditingIndex] = taskData;
             }
 
+            // 更新过滤数据并重新渲染
             applyCurrentFilter();
             renderTable();
             closeModal();
+            
+            // 显示成功消息
             alert(currentEditingIndex === -1 ? '任务创建成功！' : '任务更新成功！');
         }
 
@@ -647,6 +730,12 @@
             } else {
                 filteredTasks = [...tasks];
             }
+        }
+
+        // 分页功能（简化版）
+        function changePage(direction) {
+            // 这里可以实现实际的分页逻辑
+            console.log('Page changed:', direction);
         }
 
         // 搜索框回车事件

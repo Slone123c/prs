@@ -312,104 +312,69 @@
             font-size: 16px;
         }
 
-        /* 批次号管理 */
-        .batch-management {
-            margin-top: 24px;
-        }
+                 /* 解析文档模态框 */
+         .parse-status {
+             text-align: center;
+             padding: 20px;
+         }
 
-        .batch-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
+         .loading-icon, .success-icon, .error-icon {
+             font-size: 48px;
+             margin-bottom: 16px;
+         }
 
-        .batch-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1f2937;
-        }
+         .loading-text, .success-text, .error-text {
+             font-size: 16px;
+             font-weight: 600;
+             margin-bottom: 12px;
+         }
 
-        .add-batch-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: transform 0.3s;
-        }
+         .loading-text {
+             color: #6b7280;
+         }
 
-        .add-batch-btn:hover {
-            transform: translateY(-1px);
-        }
+         .success-text {
+             color: #10b981;
+         }
 
-        .batch-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-        }
+         .error-text {
+             color: #ef4444;
+         }
 
-        .batch-card {
-            background: #f8fafc;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 16px;
-            position: relative;
-        }
+         .parse-result {
+             background: #f0f9ff;
+             padding: 12px;
+             border-radius: 6px;
+             color: #0369a1;
+             margin-top: 12px;
+         }
 
-        .batch-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
+         .error-reason {
+             background: #fef2f2;
+             padding: 12px;
+             border-radius: 6px;
+             color: #dc2626;
+             margin: 12px 0;
+             font-size: 14px;
+         }
 
-        .batch-number {
-            font-weight: 600;
-            color: #1f2937;
-            font-size: 16px;
-        }
+         .error-actions {
+             margin-top: 12px;
+             font-size: 14px;
+             color: #6b7280;
+         }
 
-        .remove-batch-btn {
-            background: none;
-            border: none;
-            color: #ef4444;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 4px;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
+         .form-tips {
+             background: #f8fafc;
+             padding: 12px;
+             border-radius: 6px;
+             font-size: 14px;
+             color: #6b7280;
+             margin-bottom: 16px;
+             border-left: 4px solid #667eea;
+         }
 
-        .remove-batch-btn:hover {
-            background-color: rgba(239, 68, 68, 0.1);
-        }
-
-        .batch-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .batch-info-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-        }
-
-        .batch-info-label {
-            color: #6b7280;
-        }
-
-        .batch-info-value {
-            color: #374151;
-            font-weight: 500;
-        }
+ 
 
         /* 底部操作栏 */
         .form-actions {
@@ -462,7 +427,7 @@
             transform: none !important;
         }
 
-        /* 批次模态框 */
+        /* 模态框 */
         .modal {
             display: none;
             position: fixed;
@@ -831,28 +796,7 @@
              align-items: center;
          }
 
-         .validate-links-btn {
-             background: #3b82f6;
-             color: white;
-             border: none;
-             padding: 8px 16px;
-             border-radius: 6px;
-             font-size: 14px;
-             cursor: pointer;
-             display: flex;
-             align-items: center;
-             gap: 6px;
-             transition: all 0.2s ease;
-         }
 
-         .validate-links-btn:hover {
-             background: #2563eb;
-         }
-
-         .validate-links-btn:disabled {
-             background: #9ca3af;
-             cursor: not-allowed;
-         }
 
          .add-link-btn {
              background: #10b981;
@@ -981,49 +925,7 @@
              color: #ef4444;
          }
 
-         .validation-result {
-             padding: 8px 12px;
-             border: 1px solid #e5e7eb;
-             border-radius: 6px;
-             background: #f9fafb;
-             display: flex;
-             align-items: center;
-             gap: 8px;
-             min-height: 40px;
-         }
 
-         .validation-status {
-             font-size: 14px;
-             font-weight: 500;
-             display: flex;
-             align-items: center;
-             gap: 6px;
-         }
-
-         .validation-status.loading {
-             color: #3b82f6;
-         }
-
-         .validation-status.success {
-             color: #10b981;
-         }
-
-         .validation-status.error {
-             color: #ef4444;
-         }
-
-         .validation-icon {
-             font-size: 16px;
-         }
-
-         .loading-spinner {
-             width: 16px;
-             height: 16px;
-             border: 2px solid #e5e7eb;
-             border-top: 2px solid #3b82f6;
-             border-radius: 50%;
-             animation: spin 1s linear infinite;
-         }
 
          @keyframes spin {
              0% { transform: rotate(0deg); }
@@ -1654,7 +1556,10 @@
                 </div>
 
                 <div class="form-section">
-                    <h3 class="form-section-title">附件上传</h3>
+                    <h3 class="form-section-title">解析文档的导入</h3>
+                    <div class="form-tips">
+                        文档解析后会自动填写设备、链路数据，<a href="#" onclick="downloadImportTemplate()" style="color: #667eea; text-decoration: none;">点击下载导入模版</a>
+                    </div>
                     <div class="file-upload" id="fileUpload">
                         <div class="file-upload-icon">📎</div>
                         <div class="file-upload-text">
@@ -1666,19 +1571,7 @@
                     <div id="uploadedFiles"></div>
                 </div>
 
-                <!-- 批次号管理 -->
-                <div class="batch-management">
-                    <div class="batch-header">
-                        <div class="batch-title">批次管理</div>
-                        <button class="add-batch-btn" onclick="openBatchModal()">
-                            <span>+</span>
-                            添加批次
-                        </button>
-                    </div>
-                    <div class="batch-grid" id="batchGrid">
-                        <!-- 批次卡片将通过JavaScript动态添加 -->
-                    </div>
-                </div>
+
             </div>
 
             <!-- 第二步：设备调度管理 -->
@@ -1746,57 +1639,56 @@
         </div>
     </div>
 
-    <!-- 添加批次模态框 -->
-    <div class="modal" id="batchModal">
-        <div class="modal-content">
-                         <div class="modal-header">
-                 <h3 class="modal-title" id="modalTitle">添加批次</h3>
-                 <button class="modal-close" onclick="closeBatchModal()">&times;</button>
+
+
+     <!-- 文档解析模态框 -->
+     <div class="modal" id="parseModal">
+         <div class="modal-content">
+             <div class="modal-header">
+                 <h3 class="modal-title">文档解析</h3>
              </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">批次号 <span class="required">*</span></label>
-                    <input type="text" class="form-input" id="batchNumber" placeholder="请输入批次号">
-                    <div class="form-error" id="batchNumberError"></div>
-                </div>
-                                 <div class="form-group">
-                     <label class="form-label">批次描述 <span class="required">*</span></label>
-                     <textarea class="form-textarea" id="batchDescription" placeholder="请输入批次描述"></textarea>
-                     <div class="form-error" id="batchDescriptionError"></div>
+             <div class="modal-body">
+                 <!-- 解析中状态 -->
+                 <div id="parseLoading" class="parse-status">
+                     <div class="loading-icon">⏳</div>
+                     <div class="loading-text">文档正在解析中，请稍候...</div>
                  </div>
                  
-                 <div class="form-group">
-                     <label class="form-label">是否自动解析 EXCEL</label>
-                     <div class="radio-group">
-                         <label class="radio-item">
-                             <input type="radio" name="autoParseExcel" value="no" checked onchange="toggleExcelUpload(this.value)">
-                             <span>否</span>
-                         </label>
-                         <label class="radio-item">
-                             <input type="radio" name="autoParseExcel" value="yes" onchange="toggleExcelUpload(this.value)">
-                             <span>是</span>
-                         </label>
+                 <!-- 解析成功状态 -->
+                 <div id="parseSuccess" class="parse-status" style="display: none;">
+                     <div class="success-icon">✅</div>
+                     <div class="success-text">文档解析成功！</div>
+                     <div class="parse-result">
+                         <p>已成功解析 <span id="parsedDevices">0</span> 台设备和 <span id="parsedLinks">0</span> 条链路数据</p>
                      </div>
                  </div>
                  
-                 <div class="form-group" id="batchExcelUploadGroup" style="display: none;">
-                     <label class="form-label">上传 EXCEL 文件</label>
-                     <div class="file-upload" id="batchFileUpload">
-                         <div class="file-upload-icon">📎</div>
-                         <div class="file-upload-text">
-                             点击或拖拽上传Excel文档<br>
-                             <small>支持格式：xlsx、xls</small>
-                         </div>
-                         <input type="file" id="batchExcelFile" accept=".xlsx,.xls" style="display: none;">
+                 <!-- 解析失败状态 -->
+                 <div id="parseError" class="parse-status" style="display: none;">
+                     <div class="error-icon">❌</div>
+                     <div class="error-text">文档解析失败</div>
+                     <div class="error-reason" id="parseErrorReason">
+                         <!-- 失败原因将在这里显示 -->
                      </div>
-                     <div id="batchUploadedFiles"></div>
+                     <div class="error-actions">
+                         <a href="#" onclick="downloadErrorData()" style="color: #667eea; text-decoration: none;">下载错误数据</a>
+                         重新导入
+                     </div>
                  </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeBatchModal()">取消</button>
-                <button class="btn btn-primary" onclick="addBatch()">添加</button>
-            </div>
+             </div>
+             <div class="modal-footer">
+                 <div id="parseLoadingButtons" style="display: none;">
+                     <!-- 解析中不显示按钮 -->
                  </div>
+                 <div id="parseSuccessButtons" style="display: none;">
+                     <button class="btn btn-primary" onclick="confirmParsedData()">确认</button>
+                 </div>
+                 <div id="parseErrorButtons" style="display: none;">
+                     <button class="btn btn-outline" onclick="closeParseModal()">取消</button>
+                     <button class="btn btn-primary" onclick="retryParse()">重新导入</button>
+                 </div>
+             </div>
+         </div>
      </div>
 
      <!-- 扩展配置模态框 -->
@@ -1950,8 +1842,7 @@
      <script>
                  // 全局状态
          let currentStep = 1;
-         let batches = [];
-         let batchCounter = 1;
+         
          let operationBlocks = [];
          let blockCounter = 1;
          let topologyBlocks = [];
@@ -2353,6 +2244,8 @@
             }
 
             displayUploadedFile(file);
+            // 开始解析文档
+            parseDocument(file);
         }
 
         function displayUploadedFile(file) {
@@ -2370,243 +2263,94 @@
             document.getElementById('attachment').value = '';
         }
 
-        // 批次管理
-                 function openBatchModal() {
-             document.getElementById('batchModal').classList.add('show');
-             document.getElementById('modalTitle').textContent = '添加批次';
-             document.getElementById('batchNumber').value = '';
-             document.getElementById('batchDescription').value = '';
-             document.querySelector('input[name="autoParseExcel"][value="no"]').checked = true;
-             document.getElementById('batchExcelUploadGroup').style.display = 'none';
-             document.getElementById('batchExcelFile').value = '';
-             document.getElementById('batchUploadedFiles').innerHTML = '';
-             document.getElementById('batchModal').removeAttribute('data-editing-id');
-             document.querySelectorAll('#batchModal .form-error').forEach(error => error.textContent = '');
-         }
-
-        function closeBatchModal() {
-            document.getElementById('batchModal').classList.remove('show');
+        // 下载导入模版
+        function downloadImportTemplate() {
+            // 模拟下载Excel模版
+            const link = document.createElement('a');
+            link.href = '#';
+            link.download = '导入模版.xlsx';
+            alert('导入模版下载功能（演示）');
         }
 
-                 function addBatch() {
-             const batchNumber = document.getElementById('batchNumber').value.trim();
-             const batchDescription = document.getElementById('batchDescription').value.trim();
-             const autoParseExcel = document.querySelector('input[name="autoParseExcel"]:checked').value;
-             const excelFile = document.getElementById('batchExcelFile').files[0];
-             const editingId = document.getElementById('batchModal').getAttribute('data-editing-id');
-             
-             // 清除错误信息
-             document.getElementById('batchNumberError').textContent = '';
-             document.getElementById('batchDescriptionError').textContent = '';
-             
-             let isValid = true;
-             
-             if (!batchNumber) {
-                 document.getElementById('batchNumberError').textContent = '请输入批次号';
-                 isValid = false;
-             } else if (batches.some(batch => batch.number === batchNumber && batch.id != editingId)) {
-                 document.getElementById('batchNumberError').textContent = '批次号已存在';
-                 isValid = false;
-             }
-             
-             if (!batchDescription) {
-                 document.getElementById('batchDescriptionError').textContent = '请输入批次描述';
-                 isValid = false;
-             }
-             
-             if (isValid) {
-                 if (editingId) {
-                     // 编辑模式：更新现有批次
-                     const batchIndex = batches.findIndex(b => b.id == editingId);
-                     if (batchIndex !== -1) {
-                         batches[batchIndex] = {
-                             ...batches[batchIndex],
-                             number: batchNumber,
-                             description: batchDescription,
-                             autoParseExcel: autoParseExcel,
-                             excelFileName: excelFile ? excelFile.name : (batches[batchIndex].excelFileName || '')
-                         };
-                     }
-                 } else {
-                     // 新增模式：创建新批次
-                     const batch = {
-                         id: batchCounter++,
-                         number: batchNumber,
-                         description: batchDescription,
-                         autoParseExcel: autoParseExcel,
-                         excelFileName: excelFile ? excelFile.name : '',
-                         createTime: new Date().toLocaleString('zh-CN'),
-                         creator: '当前用户'
-                     };
-                     
-                     batches.push(batch);
-                 }
-                 
-                 renderBatches();
-                 closeBatchModal();
-             }
-         }
-         
-         // 切换Excel上传框显示状态
-         function toggleExcelUpload(value) {
-             const uploadGroup = document.getElementById('batchExcelUploadGroup');
-             if (value === 'yes') {
-                 uploadGroup.style.display = 'block';
-                 setupBatchFileUpload();
-             } else {
-                 uploadGroup.style.display = 'none';
-                 document.getElementById('batchExcelFile').value = '';
-                 document.getElementById('batchUploadedFiles').innerHTML = '';
-             }
-         }
-         
-         // 设置批次文件上传
-         function setupBatchFileUpload() {
-             const fileUpload = document.getElementById('batchFileUpload');
-             const fileInput = document.getElementById('batchExcelFile');
-             
-             fileUpload.onclick = () => fileInput.click();
-             
-             fileUpload.ondragover = (e) => {
-                 e.preventDefault();
-                 fileUpload.classList.add('dragover');
-             };
-             
-             fileUpload.ondragleave = (e) => {
-                 e.preventDefault();
-                 fileUpload.classList.remove('dragover');
-             };
-             
-             fileUpload.ondrop = (e) => {
-                 e.preventDefault();
-                 fileUpload.classList.remove('dragover');
-                 
-                 const files = e.dataTransfer.files;
-                 if (files.length > 0) {
-                     handleBatchFileUpload(files[0]);
-                 }
-             };
-             
-             fileInput.onchange = (e) => {
-                 if (e.target.files.length > 0) {
-                     handleBatchFileUpload(e.target.files[0]);
-                 }
-             };
-         }
-         
-         function handleBatchFileUpload(file) {
-             // 验证文件类型
-             const allowedTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel'];
-             if (!allowedTypes.includes(file.type)) {
-                 alert('只能上传Excel文件（.xlsx, .xls）');
-                 return;
-             }
+        // 开始解析文档
+        function parseDocument(file) {
+            // 显示解析模态框
+            document.getElementById('parseModal').classList.add('show');
+            
+            // 重置状态
+            document.getElementById('parseLoading').style.display = 'block';
+            document.getElementById('parseSuccess').style.display = 'none';
+            document.getElementById('parseError').style.display = 'none';
+            document.getElementById('parseLoadingButtons').style.display = 'none';
+            document.getElementById('parseSuccessButtons').style.display = 'none';
+            document.getElementById('parseErrorButtons').style.display = 'none';
+            
+            // 模拟解析过程（2秒延迟）
+            setTimeout(() => {
+                const isSuccess = Math.random() > 0.3; // 70%成功率
+                
+                if (isSuccess) {
+                    // 解析成功
+                    const parsedDevices = Math.floor(Math.random() * 50) + 10; // 10-60台设备
+                    const parsedLinks = Math.floor(Math.random() * 20) + 5; // 5-25条链路
+                    
+                    document.getElementById('parseLoading').style.display = 'none';
+                    document.getElementById('parseSuccess').style.display = 'block';
+                    document.getElementById('parseSuccessButtons').style.display = 'block';
+                    
+                    document.getElementById('parsedDevices').textContent = parsedDevices;
+                    document.getElementById('parsedLinks').textContent = parsedLinks;
+                } else {
+                    // 解析失败
+                    const errorReasons = [
+                        '文档格式错误，请检查表头是否正确',
+                        '第3行设备编码格式不符合规范',
+                        '发现重复的设备编码：SRV-001',
+                        '缺少必填字段：设备类型',
+                        '链路配置信息不完整，缺少端口信息'
+                    ];
+                    const randomError = errorReasons[Math.floor(Math.random() * errorReasons.length)];
+                    
+                    document.getElementById('parseLoading').style.display = 'none';
+                    document.getElementById('parseError').style.display = 'block';
+                    document.getElementById('parseErrorButtons').style.display = 'block';
+                    
+                    document.getElementById('parseErrorReason').textContent = randomError;
+                }
+            }, 2000);
+        }
 
-             // 验证文件大小（最大10MB）
-             if (file.size > 10 * 1024 * 1024) {
-                 alert('文件大小不能超过10MB');
-                 return;
-             }
+        // 确认解析的数据
+        function confirmParsedData() {
+            document.getElementById('parseModal').classList.remove('show');
+            alert('文档解析成功！设备和链路数据已自动填写到相应步骤中。');
+        }
 
-             displayBatchUploadedFile(file);
-         }
+        // 关闭解析模态框
+        function closeParseModal() {
+            document.getElementById('parseModal').classList.remove('show');
+        }
 
-         function displayBatchUploadedFile(file) {
-             const uploadedFiles = document.getElementById('batchUploadedFiles');
-             uploadedFiles.innerHTML = `
-                 <div class="uploaded-file">
-                     <span>📄 ${file.name}</span>
-                     <button class="remove-file" onclick="removeBatchFile()">&times;</button>
-                 </div>
-             `;
-         }
-
-                  function removeBatchFile() {
-             document.getElementById('batchUploadedFiles').innerHTML = '';
-             document.getElementById('batchExcelFile').value = '';
-         }
-
-         // 编辑批次
-         function editBatch(batchId) {
-             const batch = batches.find(b => b.id === batchId);
-             if (batch) {
-                 document.getElementById('batchModal').classList.add('show');
-                 document.getElementById('modalTitle').textContent = '编辑批次';
-                 
-                 // 填充现有数据
-                 document.getElementById('batchNumber').value = batch.number;
-                 document.getElementById('batchDescription').value = batch.description;
-                 
-                 // 设置自动解析Excel选项
-                 document.querySelector(`input[name="autoParseExcel"][value="${batch.autoParseExcel || 'no'}"]`).checked = true;
-                 
-                 // 显示/隐藏Excel上传框
-                 toggleExcelUpload(batch.autoParseExcel || 'no');
-                 
-                 // 如果有Excel文件，显示文件信息
-                 if (batch.excelFileName) {
-                     document.getElementById('batchUploadedFiles').innerHTML = `
-                         <div class="uploaded-file">
-                             <span>📄 ${batch.excelFileName}</span>
-                             <button class="remove-file" onclick="removeBatchFile()">&times;</button>
-                         </div>
-                     `;
-                 }
-                 
-                 // 设置当前编辑的批次ID
-                 document.getElementById('batchModal').setAttribute('data-editing-id', batchId);
-                 
-                 document.querySelectorAll('#batchModal .form-error').forEach(error => error.textContent = '');
-             }
-         }
-
-         function removeBatch(batchId) {
-            if (confirm('确定要删除这个批次吗？')) {
-                batches = batches.filter(batch => batch.id !== batchId);
-                renderBatches();
+        // 重新解析
+        function retryParse() {
+            const fileInput = document.getElementById('attachment');
+            if (fileInput.files.length > 0) {
+                parseDocument(fileInput.files[0]);
+            } else {
+                alert('请重新选择文件');
+                closeParseModal();
             }
         }
 
-                 function renderBatches() {
-             const batchGrid = document.getElementById('batchGrid');
-             
-             if (batches.length === 0) {
-                 batchGrid.innerHTML = '<p style="color: #6b7280; text-align: center; grid-column: 1 / -1; padding: 20px;">暂无批次信息</p>';
-                 return;
-             }
-             
-             batchGrid.innerHTML = batches.map(batch => `
-                 <div class="batch-card">
-                     <div class="batch-card-header">
-                         <div class="batch-number">批次${batch.number}</div>
-                         <div style="display: flex; gap: 8px;">
-                             <button class="btn btn-outline btn-sm" onclick="editBatch(${batch.id})" style="padding: 2px 6px; font-size: 11px;">编辑</button>
-                             <button class="remove-batch-btn" onclick="removeBatch(${batch.id})">&times;</button>
-                         </div>
-                     </div>
-                     <div class="batch-info">
-                         <div class="batch-info-item">
-                             <span class="batch-info-label">描述：</span>
-                             <span class="batch-info-value">${batch.description}</span>
-                         </div>
-                         ${batch.excelFileName ? `
-                         <div class="batch-info-item">
-                             <span class="batch-info-label">Excel附件：</span>
-                             <span class="batch-info-value" style="color: #0369a1;">📄 ${batch.excelFileName}</span>
-                         </div>
-                         ` : ''}
-                         <div class="batch-info-item">
-                             <span class="batch-info-label">创建时间：</span>
-                             <span class="batch-info-value">${batch.createTime}</span>
-                         </div>
-                         <div class="batch-info-item">
-                             <span class="batch-info-label">创建人：</span>
-                             <span class="batch-info-value">${batch.creator}</span>
-                         </div>
-                     </div>
-                 </div>
-             `).join('');
-         }
+        // 下载错误数据
+        function downloadErrorData() {
+            const link = document.createElement('a');
+            link.href = '#';
+            link.download = '错误数据报告.xlsx';
+            alert('错误数据下载功能（演示）');
+        }
+
+
 
         // 保存草稿
         function saveDraft() {
@@ -2626,8 +2370,7 @@
                      executionStart: document.getElementById('executionStart').value,
                      executionEnd: document.getElementById('executionEnd').value,
                      muteAlerts: document.getElementById('muteAlerts').checked,
-                     attachment: document.getElementById('attachment').files[0]?.name || '',
-                     batches: batches
+                     attachment: document.getElementById('attachment').files[0]?.name || ''
                  },
                  step2: {
                      operationBlocks: operationBlocks,
@@ -2730,9 +2473,7 @@
                                                     <div class="links-header">
                             <div class="links-count">链路列表 (${block.links.length}/100)</div>
                             <div class="links-actions">
-                                <button class="validate-links-btn" onclick="validateBlockLinks(${block.id})">
-                                    校验
-                                </button>
+
                                 <button class="add-link-btn" onclick="addLink(${block.id})" ${block.links.length >= 100 ? 'disabled' : ''}>
                                     <span>+</span>
                                     添加链路
@@ -2807,12 +2548,7 @@
                                             <button class="extra-config-btn" style="width: 100%;" onclick="openExtraConfigModal(${block.id}, ${index})">扩展配置</button>
                                         </div>
                                         
-                                        <div class="link-field">
-                                            <label class="link-field-label">校验结果</label>
-                                            <div class="validation-result" data-block-id="${block.id}" data-link-index="${index}">
-                                                <span class="validation-status">—</span>
-                                            </div>
-                                        </div>
+
                                     </div>
                                 </div>
                                 
@@ -2949,8 +2685,7 @@
                          portNumber: '',
                          portModule: '',
                          isPpFrame: false
-                     },
-                     validationStatus: 'default'
+                     }
                 };
                 
                 block.links.push(link);
@@ -3226,83 +2961,19 @@
              // 点击遮罩不关闭弹窗，按照要求
          });
 
-         // ===== 链路校验功能 =====
          
-         // 校验操作块中的所有链路
-         function validateBlockLinks(blockId) {
-             const block = topologyBlocks.find(b => b.id === blockId);
-             if (!block || block.links.length === 0) {
-                 alert('该操作块暂无链路，无法进行校验');
-                 return;
-             }
-             
-             // 禁用校验按钮，防止重复点击
-             const validateBtn = document.querySelector(`button[onclick="validateBlockLinks(${blockId})"]`);
-             if (validateBtn) {
-                 validateBtn.disabled = true;
-                 validateBtn.innerHTML = '校验中...';
-             }
-             
-             // 设置所有链路为loading状态
-             block.links.forEach((link, index) => {
-                 setLinkValidationStatus(blockId, index, 'loading');
-             });
-             
-             // 模拟校验过程，2秒后返回结果
-             setTimeout(() => {
-                 block.links.forEach((link, index) => {
-                     // 随机生成校验结果，70%成功率
-                     const isSuccess = Math.random() > 0.3;
-                     setLinkValidationStatus(blockId, index, isSuccess ? 'success' : 'error');
-                 });
-                 
-                 // 恢复校验按钮
-                 if (validateBtn) {
-                     validateBtn.disabled = false;
-                     validateBtn.innerHTML = '校验';
-                 }
-             }, 2000);
-         }
-         
-         // 设置链路校验状态
-         function setLinkValidationStatus(blockId, linkIndex, status) {
-             const validationElement = document.querySelector(`[data-block-id="${blockId}"][data-link-index="${linkIndex}"] .validation-status`);
-             if (!validationElement) return;
-             
-             // 清除之前的状态类
-             validationElement.classList.remove('loading', 'success', 'error');
-             
-             switch (status) {
-                 case 'loading':
-                     validationElement.classList.add('loading');
-                     validationElement.innerHTML = '<div class="loading-spinner"></div>校验中';
-                     break;
-                 case 'success':
-                     validationElement.classList.add('success');
-                     validationElement.innerHTML = '<span class="validation-icon">✓</span>校验成功';
-                     break;
-                 case 'error':
-                     validationElement.classList.add('error');
-                     validationElement.innerHTML = '<span class="validation-icon">✗</span>校验失败';
-                     break;
-                 default:
-                     validationElement.innerHTML = '—';
-             }
-         }
-         
-         // 重置链路校验状态
-         function resetLinkValidationStatus(blockId, linkIndex) {
-             setLinkValidationStatus(blockId, linkIndex, 'default');
-         }
 
                  // 点击模态框外部关闭
-         document.getElementById('batchModal').addEventListener('click', function(e) {
-             if (e.target === this) {
-                 closeBatchModal();
-             }
-         });
+         
 
-         // ===== 设备调度管理功能 =====
+                    // 点击模态框外部关闭解析模态框
+           document.getElementById('parseModal').addEventListener('click', function(e) {
+               if (e.target === this) {
+                   closeParseModal();
+               }
+           });
+
+           // ===== 设备调度管理功能 =====
          
          // 添加操作类型块
          function addOperationBlock() {
@@ -3342,7 +3013,7 @@
                      <div class="operation-block-header">
                          <div class="block-title">操作类型块 ${block.id}</div>
                          <div class="block-actions">
-                             <button class="btn btn-outline btn-sm" onclick="validateOperationBlock(${block.id})">校验</button>
+
                              <button class="btn btn-danger btn-sm" onclick="removeOperationBlock(${block.id})">删除</button>
                          </div>
                      </div>
@@ -3409,7 +3080,6 @@
                                   <th>内网IP</th>
                                   <th>公网IP</th>
                                   <th>SNMP团体名</th>
-                                  <th>校验结果</th>
                                   <th>操作</th>
                               </tr>
                           </thead>
@@ -3472,9 +3142,6 @@
                                                  onchange="updateDeviceField(${block.id}, ${index}, 'snmpCommunity', this.value)"
                                                  placeholder="public@123">
                                       </td>
-                                      <td style="text-align: center;">
-                                          <span class="validation-status" data-block-id="${block.id}" data-device-index="${index}">—</span>
-                                      </td>
                                       <td>
                                           <button class="remove-device-btn" onclick="removeDevice(${block.id}, ${index})">删除</button>
                                       </td>
@@ -3522,8 +3189,7 @@
                      ownerCompany: '',
                      privateIp: '',
                      publicIp: '',
-                     snmpCommunity: '',
-                     validationStatus: 'pending'
+                     snmpCommunity: ''
                  };
                  
                  block.devices.push(device);
@@ -3593,35 +3259,7 @@
              }
          }
          
-         // 校验操作类型块
-         function validateOperationBlock(blockId) {
-             const block = operationBlocks.find(b => b.id === blockId);
-             if (block) {
-                 // 将所有设备的校验状态设为loading
-                 block.devices.forEach((device, index) => {
-                     const statusElement = document.querySelector(`[data-block-id="${blockId}"][data-device-index="${index}"]`);
-                     if (statusElement) {
-                         statusElement.innerHTML = '⏳';
-                         statusElement.title = '校验中...';
-                     }
-                 });
-                 
-                 // 模拟校验过程
-                 setTimeout(() => {
-                     block.devices.forEach((device, index) => {
-                         // 随机生成校验结果
-                         const isValid = Math.random() > 0.3; // 70%成功率
-                         const statusElement = document.querySelector(`[data-block-id="${blockId}"][data-device-index="${index}"]`);
-                         if (statusElement) {
-                             statusElement.innerHTML = isValid ? '✓' : '✗';
-                             statusElement.title = isValid ? '校验成功' : '校验失败';
-                             statusElement.style.color = isValid ? '#10b981' : '#ef4444';
-                         }
-                         device.validationStatus = isValid ? 'success' : 'failed';
-                     });
-                 }, 2000); // 2秒后完成校验
-             }
-         }
+         
          
          // 更新统计信息
          function updateBlocksStatistics() {
